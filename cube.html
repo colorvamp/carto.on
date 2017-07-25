@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>Carto.on! | CartoDB.js</title>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+	<style>
+.perspective {
+    box-shadow: 0 0 0 .1em hsla(0,0%,0%,.2);
+    left: 50%;
+    height: 40px;
+    width: 40px;
+    transform: rotateX(45deg) rotateZ(45deg);
+    transform-style: preserve-3d;
+}
+.cube,
+.cube-left,
+.cube-right {
+    box-shadow: inset 0 0 0 .25em hsla(0,0%,0%,.1);
+    content: '';
+    float: left;
+    height: 40px;
+    position: absolute;
+    width: 40px;
+}
+/* Top */
+.cube {
+    background-color: #f66;
+    position: relative;
+    transform: translateZ(40px);
+    transform-style: preserve-3d;
+    /*transition: .25s;*/
+}
+/* Left */
+.cube .cube-left {
+    background-color: #e55;
+   transform: rotateX(-90deg) translateY(40px);
+    transform-origin: 40px 40px;
+}
+/* Right */
+.cube .cube-right {
+    background-color: #d44;
+    transform: rotateY(90deg) translateX(40px);
+    transform-origin: 40px 0;
+}
+/* Alternate Colour */
+.cube:nth-child(even) {
+    background-color: #fc6;
+}
+.cube:nth-child(even):after {
+    background-color: #eb5;
+}
+.cube:nth-child(even):before {
+    background-color: #da4;
+}
+
+.cube-holder{position:absolute;
+    top:50%;
+	left:50%;
+    width:40px;
+}
+.cube-control-height{position:absolute;height:4px;width:4px;background:white;border:1px solid blue;left:calc( 50% - 2px );top:-50px;}
+.cube-control-angle{position:absolute;height:4px;width:4px;background:white;border:1px solid blue;left:calc( 50% - 2px );top:50px;}
+	</style>
+	</head>
+	<body>
+		<div class="cube-parent">
+
+		</div>
+
+		<script type="text/javascript">
+			addEventListener('load',function(){
+				var holder = document.querySelector('.cube-parent');
+
+
+				var cube = new _cube();
+				cube.append(holder);
+			});
+
+
+	function _cube(){
+		this.elem = document.createElement('DIV');
+		this.elem.classList.add('cube-holder');
+
+		this.elem.perspective = document.createElement('DIV');
+		this.elem.perspective.classList.add('perspective');
+		this.elem.appendChild(this.elem.perspective);
+
+		this.elem.cube = document.createElement('DIV');
+		this.elem.cube.classList.add('cube');
+		this.elem.perspective.appendChild(this.elem.cube);
+
+		/* Right side */
+		this.elem.cube_right = document.createElement('DIV');
+		this.elem.cube_right.classList.add('cube-right');
+		this.elem.cube.appendChild(this.elem.cube_right);
+
+		/* Left side */
+		this.elem.cube_left = document.createElement('DIV');
+		this.elem.cube_left.classList.add('cube-left');
+		this.elem.cube.appendChild(this.elem.cube_left);
+
+
+		/* Controls */
+		this.elem.cube_control_height = document.createElement('DIV');
+		this.elem.cube_control_height.classList.add('cube-control-height');
+		this.elem.appendChild(this.elem.cube_control_height);
+
+		this.elem.cube_control_angle = document.createElement('DIV');
+		this.elem.cube_control_angle.classList.add('cube-control-angle');
+		this.elem.appendChild(this.elem.cube_control_angle);
+
+
+		var ths = this;
+		this.elem.cube_control_height.addEventListener('mousedown',function(e){ths.height_mousedown(e);});
+	};
+	_cube.prototype.append = function(holder){
+		holder.appendChild(this.elem);
+	};
+	_cube.prototype.height_mousedown = function(e){
+		if ( e.button === 1 ) {return false;}
+
+		e.preventDefault();
+		e.stopPropagation();
+		var ths = this;
+		this.elem.startX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+		this.elem.startY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+		if( !this.elem.startIndexY ){
+			//FIXME: hardcoded
+			this.elem.startIndexY = 40;
+		}
+
+		//elem.startScrollX = elem.parentNode.scrollLeft;
+		//elem.viewpW = holder.offsetWidth;
+		//elem.startW = elem.getAttribute('width');
+
+		if( !('handlerHeightMouseMove' in this.elem) ){
+			this.elem.handlerHeightMouseMove = function(e){ths.height_mousemove(e);}
+			this.elem.handlerHeightMouseUp   = function(e){ths.height_mouseup(e);}
+		}
+
+		addEventListener('mousemove',this.elem.handlerHeightMouseMove,false);
+		addEventListener('mouseup',  this.elem.handlerHeightMouseUp,false);
+		//addEventListener('touchmove',this.panel.handlerHeightMouseMove,false);
+		//addEventListener('touchend', this.panel.handlerHeightMouseUp,false);
+		//addEventListener('touchstop',this.panel.handlerHeightMouseUp,false);
+	};
+	_cube.prototype.height_mousemove = function(e){
+		e.stopPropagation();
+
+		this.elem.x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+		this.elem.y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+		this.elem.diffY = this.elem.startY - this.elem.y;
+		this.elem.tmp = (this.elem.startIndexY + this.elem.diffY);
+		//FIXME: hardcoded
+		if( this.elem.tmp < 40 ){this.elem.tmp = 40;}
+
+		this.elem.cube.style.transform   = 'translateZ(' + this.elem.tmp + 'px)';
+		this.elem.cube_right.style.width = this.elem.tmp + 'px';
+		this.elem.cube_left.style.height = this.elem.tmp + 'px';
+return false;
+	};
+	_cube.prototype.height_mouseup = function(e){
+		e.preventDefault();
+		e.stopPropagation();
+
+		this.elem.startIndexY = (this.elem.startIndexY + this.elem.diffY);
+
+		removeEventListener('mousemove',this.elem.handlerHeightMouseMove,false);
+		removeEventListener('mouseup',  this.elem.handlerHeightMouseUp,false);
+	};
+
+	_cube.prototype.angle_mousedown = function(e){
+		if ( e.button === 1 ) {return false;}
+
+		e.preventDefault();
+		e.stopPropagation();
+		var ths = this;
+		this.elem.startX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+		this.elem.startY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+		if( !this.elem.startIndexY ){
+			//FIXME: hardcoded
+			this.elem.startIndexY = 40;
+		}
+
+		//elem.startScrollX = elem.parentNode.scrollLeft;
+		//elem.viewpW = holder.offsetWidth;
+		//elem.startW = elem.getAttribute('width');
+
+		if( !('handlerMouseMove' in this.elem) ){
+			//this.elem.handlerMouseMove = function(e){ths.height_mousemove(e);}
+			//this.elem.handlerMouseUp   = function(e){ths.height_mouseup(e);}
+		}
+
+		addEventListener('mousemove',this.elem.handlerMouseMove,false);
+		addEventListener('mouseup',  this.elem.handlerMouseUp,false);
+		//addEventListener('touchmove',this.panel.handlerMouseMove,false);
+		//addEventListener('touchend', this.panel.handlerMouseUp,false);
+		//addEventListener('touchstop',this.panel.handlerMouseUp,false);
+	};
+
+
+		</script>
+	</body>
+</html>
