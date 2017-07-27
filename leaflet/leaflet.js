@@ -3924,7 +3924,14 @@ L.DivIcon = L.Icon.extend({
 		var div = (oldIcon && oldIcon.tagName === 'DIV') ? oldIcon : document.createElement('div'),
 		    options = this.options;
 
-		div.innerHTML = options.html !== false ? options.html : '';
+		if( options.html !== false ){
+			if( typeof options.html == 'string' || options.html instanceof String ){
+				div.innerHTML = options.html;
+			}else if( 'nodeType' in options.html && options.html.nodeType === 1 && 'cloneNode' in options.html ){
+				div.appendChild(options.html);
+			}
+		}
+		//div.innerHTML = options.html !== false ? options.html : '';
 
 		if (options.bgPos) {
 			div.style.backgroundPosition = (-options.bgPos.x) + 'px ' + (-options.bgPos.y) + 'px';

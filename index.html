@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>Carto.on! | CartoDB.js</title>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+	<link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+	<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+	<link rel="stylesheet" href="css/cube.css" />
+	<link rel="stylesheet" href="css/carto.shop.css" />
+	<link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" />
+
+	<script type="text/javascript" src="leaflet/leaflet.js"></script>
+	<script type="text/javascript" src="js/carto.on/carto.on.js"></script>
+	<script type="text/javascript" src="js/carto.on/wkx.min.js"></script>
+	<script type="text/javascript" src="leaflet/carto.shop.js" async defer></script>
+	<script type="text/javascript" src="leaflet/cube.js"></script>
+	<script type="text/javascript" src="js/dropdown.js" async defer></script>
+</head>
+<body class="cartoshop">
+	<ul class="menu">
+		<li class="dropdown-toggle"><span>Archive</span>
+			<div class="dropdown-menu padded">
+				<h4><i class="fa fa-plus"></i> Archive Menu</h4>
+				<p>Testing ....</p>
+			</div>
+		</li>
+		<li class="dropdown-toggle"><span>Edit</span>
+			<div class="dropdown-menu padded">
+				<h4><i class="fa fa-plus"></i> Edit Menu</h4>
+				<p>Testing ....</p>
+			</div>
+		</li>
+		<li>Select</li>
+		<li class="dropdown-toggle"><span><i class="fa fa-th-list" aria-hidden="true"></i> Layer</span>
+			<div class="dropdown-menu padded">
+				<h4><i class="fa fa-th-list" aria-hidden="true"></i> Layer Menu</h4>
+				<ul class="table strip cartoshop-layer-list">
+					<li class="header"><div class="collapse"></div><div>Layer Type</div><div>Layer ID</div></li>
+				</ul>
+				<div><a class="cartoshop-layer-add" href="javascript:"><i class="fa fa-plus"></i> Add new layer</a></div>
+			</div>
+		</li>
+	</ul>
+	<div class="main-window">
+		<div class="cartoshop-map"></div>
+		<div class="sidebar"></div>
+	</div>
+
+		<script type="text/javascript">
+			addEventListener('load',function(){
+				return false;
+				//var _map = new _cartoon('.cartoshop-map');
+				//_map.config(test_config);
+				//_map.render();
+			});
+
+var test_config = {
+  "center":"[52.5897007687178, 52.734375]",
+  "zoom":4,
+  "maps_api_config": {
+    "user_name": "documentation",
+    "maps_api_template": "http://{user}.carto.com:80"
+  },
+  "layers":[
+    {
+      "type":"tiled",
+      "options":{
+        "urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "minZoom":"0",
+        "maxZoom":"12",
+        "attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+      }
+    },
+    {
+      "type":"CartoDB",
+      "options":{
+        "sql":"select *,ST_AsGeoJSON(the_geom) as geojson from ne_adm0_europe",
+        "cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
+        "cartocss_version":"2.1.1"
+      }
+    },
+    {
+      "options": {
+        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+        "minZoom": "0",
+        "maxZoom": "18",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+      },
+      "type": "tiled"
+    }
+  ],
+};
+		</script>
+	</body>
+</html>
