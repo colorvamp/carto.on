@@ -11,10 +11,13 @@
 	<link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" />
 
 	<script type="text/javascript" src="leaflet/leaflet.js"></script>
-	<script type="text/javascript" src="js/carto.on/carto.on.js"></script>
-	<script type="text/javascript" src="js/carto.on/wkx.min.js"></script>
-	<script type="text/javascript" src="leaflet/carto.shop.js" async defer></script>
 	<script type="text/javascript" src="leaflet/cube.js"></script>
+	<script type="text/javascript" src="js/carto.on/carto.on.js"></script>
+	<script type="text/javascript" src="js/carto.on/carto.on.layers.js"></script>
+	<script type="text/javascript" src="js/carto.on/wkx.min.js"></script>
+	<script type="text/javascript" src="js/mustache.min.js"></script>
+	<script type="text/javascript" src="js/carto.on/carto.shop.js" async defer></script>
+	<script type="text/javascript" src="js/widgets/widget.tabs.js" async defer></script>
 	<script type="text/javascript" src="js/dropdown.js" async defer></script>
 </head>
 <body class="cartoshop">
@@ -44,7 +47,56 @@
 	</ul>
 	<div class="main-window">
 		<div class="cartoshop-map"></div>
-		<div class="sidebar"></div>
+		<div class="cartoshop-sidebar"></div>
+	</div>
+	<div class="cartoshop-footer">
+		<div class="cartoshop-footer-keys"></div>
+	</div>
+
+	<div class="cartoshop-templates">
+		<section class="cartoshop-sidebar-layer-cartodb">
+			<h2>Layer: cartodb</h2>
+			<ul class="tabs widget-tabs">
+				<li class="tab">
+					<div class="label">
+						<span class="ellipsis"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
+					</div>
+					<div class="content">
+						<h4><i class="fa fa-pencil" aria-hidden="true"></i> Edit</h4>
+						<p>Edit layer basic params</p>
+						<ul class="table radio">
+							<li><div>ID</div><div>{{layer.id}}</div></li>
+							<li><div>Type</div><div>{{layer.type}}</div></li>
+						</ul>
+					</div>
+				</li>
+				<li class="tab">
+					<div class="label">
+						<span class="ellipsis"><i class="fa fa-file-text-o" aria-hidden="true"></i> SQL</span>
+					</div>
+					<div class="content">
+						<h4><i class="fa fa-file-text-o" aria-hidden="true"></i> SQL</h4>
+						<p>Edit SQL query</p>
+						<div class="box">
+							<textarea class="cartoshop-cartocss">{{layer.options.sql}}</textarea>
+						</div>
+					</div>
+				</li>
+				<li class="tab">
+					<div class="label">
+						<span class="ellipsis"><i class="fa fa-file-text-o" aria-hidden="true"></i> CartoCSS</span>
+					</div>
+					<div class="content">
+						<h4><i class="fa fa-file-text-o" aria-hidden="true"></i> CartoCSS</h4>
+						<p>Edit CartoCSS sheet</p>
+						<div class="box">
+							<textarea class="cartoshop-cartocss">{{layer.options.cartocss}}</textarea>
+						</div>
+					</div>
+				</li>
+			</ul>
+
+		</section>
 	</div>
 
 		<script type="text/javascript">
@@ -75,7 +127,7 @@ var test_config = {
     {
       "type":"CartoDB",
       "options":{
-        "sql":"select *,ST_AsGeoJSON(the_geom) as geojson from ne_adm0_europe",
+        "sql":"select * as geojson from european_countries_e",
         "cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
         "cartocss_version":"2.1.1"
       }

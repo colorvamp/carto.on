@@ -23,18 +23,22 @@
 
 		/* Controls */
 		this._container.cube_control_height = document.createElement('DIV');
+		this._container.cube_control_height.classList.add('cube-control');
 		this._container.cube_control_height.classList.add('cube-control-height');
 		this._container.appendChild(this._container.cube_control_height);
 
 		this._container.cube_control_angle = document.createElement('DIV');
+		this._container.cube_control_angle.classList.add('cube-control');
 		this._container.cube_control_angle.classList.add('cube-control-angle');
 		this._container.appendChild(this._container.cube_control_angle);
 
 		this._container.cube_control_left = document.createElement('DIV');
+		this._container.cube_control_left.classList.add('cube-control');
 		this._container.cube_control_left.classList.add('cube-control-left');
 		this._container.appendChild(this._container.cube_control_left);
 
 		this._container.cube_control_right = document.createElement('DIV');
+		this._container.cube_control_right.classList.add('cube-control');
 		this._container.cube_control_right.classList.add('cube-control-right');
 		this._container.appendChild(this._container.cube_control_right);
 
@@ -84,6 +88,9 @@
 	};
 	_cube.prototype.scale = function(ratio){
 		this._container.style.transform = 'scale(' + ratio + ') translateX(-20px) translateY(-20px)';
+	};
+	_cube.prototype.controlsToggle = function(ratio){
+		this._container.classList.toggle('active');
 	};
 	_cube.prototype.appendTo = function(holder){
 		holder.appendChild(this._container);

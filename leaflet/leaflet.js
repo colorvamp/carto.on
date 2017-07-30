@@ -2025,6 +2025,7 @@ L.Map = L.Evented.extend({
 		this.createPane('tilePane');
 		this.createPane('shadowPane');
 		this.createPane('overlayPane');
+		this.createPane('controlsPane');
 		this.createPane('markerPane');
 		this.createPane('popupPane');
 

@@ -8,11 +8,6 @@
 	transform-origin: 20px 20px;
     transform-style: preserve-3d;
 }
-
-.cube-holder{
-	transform:translateX(-20px) translateY(-20px);
-	transform-origin: 0 0;
-}
 .cube,
 .cube-left,
 .cube-right {
@@ -45,8 +40,9 @@
 	opacity:.8;
 }
 
-.cube-holder{position:absolute;width:40px;}
-.cube-control-height{position:absolute;height:8px;width:8px;background:white;border:1px solid blue;left:calc( 50% - 4px );top:-50px;cursor:row-resize;}
-.cube-control-right{position:absolute;height:8px;width:8px;background:white;border:1px solid blue;left:calc( 120% + 4px );top:35px;cursor:ew-resize;}
-.cube-control-left{position:absolute;height:8px;width:8px;background:white;border:1px solid blue;left:calc( -60% + 4px );top:35px;cursor:col-resize;}
-.cube-control-angle{position:absolute;height:8px;width:8px;background:white;border:1px solid blue;left:calc( 50% - 4px );top:70px;cursor:col-resize;}
+.cube-holder{position:absolute;width:40px;transform:translateX(-20px) translateY(-20px);transform-origin: 0 0;}
+.cube-holder.active .cube-control{display:block;}
+.cube-control-height{display:none;position:absolute;height:8px;width:8px;background:white;border:1px solid blue;left:calc( 50% - 4px );top:-50px;cursor:row-resize;}
+.cube-control-right{display:none;position:absolute;height:8px;width:8px;background:white;border:1px solid blue;left:calc( 120% + 4px );top:35px;cursor:ew-resize;}
+.cube-control-left{display:none;position:absolute;height:8px;width:8px;background:white;border:1px solid blue;left:calc( -60% + 4px );top:35px;cursor:col-resize;}
+.cube-control-angle{display:none;position:absolute;height:8px;width:8px;background:white;border:1px solid blue;left:calc( 50% - 4px );top:70px;cursor:col-resize;}

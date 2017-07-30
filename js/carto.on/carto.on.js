@@ -30,8 +30,9 @@ this.dispatchEvents = true;
 		if( !this._config ){this._config = {};}
 		var tmp = null;
 
-		if( !this._config.center ){this._config.center = [42.465852227987,-2.451798543334];}
+		if( !this._config.center ){this._config.center = [40.40927061480857,-3.7368214130401616];}
 		if( !this._config.zoom ){this._config.zoom = 12;}
+		if( !this._config.maps_api_config ){this._config.maps_api_config = {};}
 		if( !this._config.layers ){
 			this._config.layers = [{
 				"type":"tiled",
@@ -54,7 +55,9 @@ this.dispatchEvents = true;
 	};
 	_cartoon.prototype.render = function(){
 		var ths = this;
+//window.L_PREFER_CANVAS = true;
 		this.map = L.map(this.holder,{zoomControl:false}).setView(this._config.center,this._config.zoom);
+		this.layers._cartoon = this;
 		this.layers.map = this.map;
 
 		if( this.dispatchEvents ){
@@ -84,227 +87,171 @@ this.dispatchEvents = true;
 		//L.marker([42.460346499269,-2.4478838592768]).bindPopup("<h4>Hotel Ciudad de Logroño</h4>").addTo(this.map);
 	};
 
-	function _cartoon_layers(config){
-		this.layers = {};
-		this.config = {};
-		this.map = false;
-
-//FIXME: hardcoded
-		this.config.dispatchEvents = true;
+	/* Cartoon Cartocss parser
+	 * Class for parsing and selecting cartocss styles
+	 */
+	function _cartoon_cartocss(){
+		this.rules = [];
 	};
-	_cartoon_layers.prototype.register = function(layer){
-		var ths = this;
-		if( !layer.id ){layer.id = this._guid();}
+	_cartoon_cartocss.prototype.style = function(props){
+		var a,v,k,selector = '',selector_,valid,name;
+var styles = {};
+		if( props.id ){selector += '#' + props.id;}
+console.log(selector);
 
-		/* INI-Layer extended functions */
-		layer.add = function(obj){
-			this._layer.addLayer(obj);
+		this.rules.forEach(function(v,k){
+			selector_ = v.selector.base.join(' ');
 
-			//console.log(obj._type);
-			if( ths.config.dispatchEvents
-			 && obj._type && obj._type == 'cube' ){
-				/* Save new information in layer config */
-				//this.cubes.push({'center':,'angle':});
-				
-
-				obj.on('dragstart',function(e){
-					var event = new CustomEvent('cartoon-marker-dragstart',{'detail':{'map':ths.map,'marker':this,'layer':layer},'bubbles':true,'cancelable':true});
-					ths.map._container.dispatchEvent(event);
-				});
-				obj.on('dragend',function(e){
-					//console.log(this.getLatLng());
-				});
-
-			}
-		};
-		layer.hide = function(){
-			if( this._layer._container ){
-				this._layer._container.style.display = 'none';
-			}
-			if( this._layer._layers ){
-				this._layer.eachLayer(function(l,lk){
-					l._icon.childNodes[0].style.display = 'none';
-				});
-			}
-
-			this._cartoon_display = 'none';
-			if( this.map && this.config.dispatchEvents ){
-				/* Notify the layer visibility change */
-				var event = new CustomEvent('cartoon-layer-visibility-change',{'detail':{'map':this.map,'layer':layer,'visibility':'hidden'},'bubbles':true,'cancelable':true});
-				this.map._container.dispatchEvent(event);
-			}
-		};
-		layer.show = function(){
-			if( this._layer._container ){
-				this._layer._container.style.display = 'block';
-			}
-			if( this._layer._layers ){
-				this._layer.eachLayer(function(l,lk){
-					l._icon.childNodes[0].style.display = 'block';
-				});
-			}
-
-			this._cartoon_display = 'block';
-			if( this.map && this.config.dispatchEvents ){
-				/* Notify the layer visibility change */
-				var event = new CustomEvent('cartoon-layer-visibility-change',{'detail':{'map':this.map,'layer':layer,'visibility':'visible'},'bubbles':true,'cancelable':true});
-				this.map._container.dispatchEvent(event);
-			}
-		};
-		layer.toggle = function(){
-			if( !this._cartoon_display || this._cartoon_display == 'block' ){return this.hide();}
-			return this.show();
-		};
-		/* END-Layer extended functions */
-
-		if( this.map ){
-			/* If the map exists, we apply the layers */
-			if( layer.type == 'tiled' ){
-				layer._layer = L.tileLayer(layer.options.urlTemplate,{
-					maxZoom: layer.options.maxZoom || 18,
-					minZoom: layer.options.minZoom || 0,
-					attribution: layer.options.attribution,
-					id: layer.id
-				}).addTo(this.map);
-			}
-			if( layer.type == 'cubes' ){
-				var metersPerPixel = 40075016.686 * Math.abs(Math.cos(this.map.getCenter().lat * 180/Math.PI)) / Math.pow(2, 18 + 8);
-				var zoom = ths.map.getZoom();
-				var o = 1;
-				if( zoom != 18 ){
-					var mpp  = 40075016.686 * Math.abs(Math.cos(this.map.getCenter().lat * 180/Math.PI)) / Math.pow(2, this.map.getZoom() + 8);
-					o = metersPerPixel/mpp;
+			if( selector == selector_ ){
+				if( !v.selector.cond.length ){
+					styles = $extend(styles,v.styles);
+					return;
 				}
-
-				layer._layer = L.layerGroup().addTo(this.map);
-
-				/* Voxel party! Render the list of cubes */
-				layer.cubes.forEach(function(c,ck){
-					//FIXME: solo si no viene id
-
-//FIXME: necesito un helper para cubes
-					var id     = ths._guid();
-					var cube   = new _cube();
-					var icon   = L.divIcon({html:cube._container,'iconSize':[0,0]});
-					var marker = L.marker(c.center,{'icon':icon,draggable:'true'});
-					marker._cube = cube;
-					marker._type = 'cube';
-
-					if( o != 1 ){cube.scale(o);}
-					if( c.angle ){cube.angle(c.angle);}
-					if( c.height ){cube.height(c.height);}
-					layer.add(marker);
+				valid = true;
+				v.selector.cond.forEach(function(f,d){
+					if( !valid ){/* exit fast */return false;}
+					if( !props.row || !props.row[f.field] ){return valid = false;}
+					var expr = props.row[f.field] + ( f.expr == '=' ? '==' : f.expr ) + f.value;
+					if( !eval(expr) ){return valid = false;}
+					/* Rule end successfully! */
 				});
+				if( valid ){
+					styles = $extend(styles,v.styles);
+				}
+			}
+		});
 
-				/* We Need a listener for resizing */
-				this.map.on('zoomend',function(){
-					var metersPerPixel = 40075017 * Math.abs(Math.cos(ths.map.getCenter().lat * 180/Math.PI)) / Math.pow(2, 18 + 8);
+		var final_styles = {};
+		for( a in styles ){
+			name = a;
+			if( a == 'polygon-fill' ){name = 'fillColor';}
+			if( a == 'polygon-opacity' ){name = 'fillOpacity';}
+			if( a == 'line-color' ){name = 'color';}
+			if( a == 'line-width' ){name = 'weight';}
+			if( a == 'line-opacity' ){name = 'opacity';}
+			final_styles[name] = styles[a];
+		}
+console.log(final_styles);
+		return final_styles;
+	};
+	_cartoon_cartocss.prototype.layer = function(layer){
 
-					/* zoom 18 == 1:1 */
-					var zoom = ths.map.getZoom();
-					var o = 1;
-					if( zoom != 18 ){
-						var mpp  = 40075017 * Math.abs(Math.cos(ths.map.getCenter().lat * 180/Math.PI)) / Math.pow(2, ths.map.getZoom() + 8);
-						o = metersPerPixel/mpp;
-					}
-					layer._layer.eachLayer(function(layr){
-						layr._cube.scale(o);
+	};
+	_cartoon_cartocss.prototype.parse = function(blob,props){
+		/* Remove comments */
+		blob = blob.replace(/\/\*.*?\*\//g,'');
+
+		blob.replace(/([#\.a-z]{1}[^\{]+)\{([^\}]+)\}\n/g,function(rule,selector,styles){
+			selector = selector.replace(/\[([^\]]+)\]/g,function(n){
+				/* Remove spaces in attrib selector */
+				return n.replace(/[ \n\t]/g,'');
+			});
+			selector = selector.split(' ');
+
+			var selector_final = {
+				 'base':[]
+				,'cond':[]
+			};
+			selector.forEach(function(part,k){
+				if( $is.empty(part) ){return;}
+				if( part.startsWith('[') ){
+					/* Split the conditional parts -> [field<num] */
+					part = part.substring(1,part.length - 1);
+					part.replace(/^([^<=>]+)([<=>]+)([^ ]+)$/,function(n,field,expr,value){
+						part = {'field':field,'expr':expr,'value':value};
 					});
-				});
-			}
-			if( layer.type == 'CartoDB' ){
-				layer._layer = L.layerGroup().addTo(this.map);
+					selector_final.cond.push(part);
+					return;
+				}
+				selector_final.base.push(part);
+			});
 
-				//FIXME: pasar ths._query
-				ths._query('https://sombra2eternity.carto.com/api/v2/sql?q=select *,ST_AsGeoJSON(the_geom) as geojson from ne_adm0_europe where cartodb_id = 1',false,{
-					'onEnd': function(data){
-						
-//FIXME: parsear datos de campos
-						data = JSON.parse(data);
-						data.rows.forEach(function(row,rowKey){
-							if( row.the_geom ){
-								//FIXME: cachear en this
-								var wkx = require('wkx');
-								var arrayBuffer = Uint8Array.from(row.the_geom.match(/.{2}/g),function(byte){
-									return parseInt(byte,16);
-								});
-								var geometry = wkx.Geometry.parse(arrayBuffer);
-								delete arrayBuffer;
-								var geojson = geometry.toGeoJSON();
-								delete geometry;
-								console.log(geojson);
-								L.geoJson(geojson,{weight:1}).addTo(layer._layer);
-							}
+			var styles_final = {};
+			styles = styles.replace(/([a-z\-]+)[ ]*:[ ]*([^;]+);/g,function(n,name,value){
+				styles_final[name] = value;
+			});
 
-
-
-
-//console.log(row.geojson);
-							//L.geoJson(JSON.parse(row.geojson),{weight:1}).addTo(ths.map);
-//L.geoJson(_cartoon_wkb_to_geojson(row.the_geom),{weight:1}).addTo(map);
-						});
-					}
-				});
-			}
-		}
-
-		if( this.map && this.config.dispatchEvents ){
-			/* Notify the layer registering */
-			var event = new CustomEvent('cartoon-layer-register',{'detail':{'map':this.map,'layer':layer},'bubbles':true,'cancelable':true});
-			this.map._container.dispatchEvent(event);
-		}
-
-		/* Callbacks */
-		
-
-		return this.layers[layer.id] = layer;
-	};
-	_cartoon_layers.prototype.empty = function(){
-		this.layers = {};
+			this.rules.push({
+				 'selector':selector_final
+				,'styles':styles_final
+			});
+		}.bind(this));
 	}
-	_cartoon_layers.prototype.get = function(id){
-		if( !this.layers[id] ){return false;}
-		return this.layers[id];
-	};
-	_cartoon_layers.prototype._query = function(url,params,callbacks){
-		if( !callbacks ){callbacks = {};}
-		var method = 'GET';if(params){method = 'POST';}
-		var rnd = Math.floor(Math.random()*10000);
-		var data = false;
-		if(params){switch(true){
-			case params === {}:break;
-			case ($is.object(params)):data = new FormData();for(k in params){data.append(k,params[k]);}break;
-			default:data = params;
-		}}
 
-		var xhr = new XMLHttpRequest();
-		if( url.indexOf('?') > 0 ){}
-		xhr.open(method,url + ( url.indexOf('?') > 0 ? '&' : '?' ) + 'rnd=' + rnd,true);
-		xhr.onreadystatechange = function(){
-			if( callbacks.onEnd && xhr.readyState == XMLHttpRequest.DONE ){
-				return callbacks.onEnd(xhr.responseText);
+	L.GeoJSON = L.GeoJSON.extend({
+		'onAdd': function (map) {
+			var ths = this;
+			for (var i in this._layers) {
+				map.addLayer(this._layers[i]);
 			}
+
+			map.on('zoomend',this.update_.bind(this));
+		},
+		'onRemove': function (map) {
+			for (var i in this._layers) {
+				map.removeLayer(this._layers[i]);
+			}
+
+			map.off('zoomstart zoomend',this.update_.bind(this));
+		},
+		'update_': function(e){
+			if( e.type == 'zoomend' && this._cartoon_status == 'selected' ){
+				//FIXME: no es la mejor manera de recalcular
+				this.controlsShow();
+			}
+		},
+		'controlsShow': function(){
+			/* Show controls on geojson layers */
+			//FIXME: probablemente debería ser en svg?
+			if( !this._map ){return false;}
+			if( !this._map._panes.controlsPane ){return false;}
+
+			var bounds = this.getBounds();
+
+			//FIXME: no siempre hay que volver a esconder
+			this.controlsHide();
+			var ovrly = document.createElement('DIV');
+			ovrly.classList.add('leaflet-control-geojson');
+			ovrly.style.position = 'absolute';
+			this._map._panes.controlsPane.appendChild(ovrly);
+
+			var rect, left = false, top = false, right = false, bottom = false
+				,_southWest = this._map.latLngToLayerPoint(bounds._southWest)
+				,_northEast = this._map.latLngToLayerPoint(bounds._northEast);
+			top    = _northEast.y;
+			left   = _southWest.x;
+			width  = _northEast.x - left;
+			height = _southWest.y - top;
+
+			ovrly.style.left   = left + 'px';
+			ovrly.style.top    = top + 'px';
+			ovrly.style.width  = width + 'px';
+			ovrly.style.height = height + 'px';
+			this._cartoon_status = 'selected';
+			if( !this._cartoon_controls ){this._cartoon_controls = {};}
+			this._cartoon_controls._container = ovrly;
+		},
+		'controlsHide': function(){
+			if( this._cartoon_controls
+			 && this._cartoon_controls._container
+			 && this._cartoon_controls._container.parentNode ){
+				this._cartoon_controls._container.parentNode.removeChild(this._cartoon_controls._container);
+			}
+			this._cartoon_status = 'normal';
 		}
-		//if(!$is.formData(data)){xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');}
-		xhr.send(data);
-	};
-	_cartoon_layers.prototype._guid = function(){
-		function s4(){
-			return Math.floor((1 + Math.random()) * 0x10000)
-			.toString(16)
-			.substring(1);
-		};
-		return s4() + s4() + '-' + s4();
-	};
+	});
 
 	if( typeof _cartoon_helper_query == 'undefined' ){
 		
 	}
 
+	if( typeof $extend == 'undefined' ){
+		function $extend(destination,source){for(var property in source){destination[property] = source[property];}return destination;}
+	}
 	if( typeof $is == 'undefined' ){
 		var $is = {
 			empty:    function(o){if(!o || ($is.string(o) && o == '') || ($is.array(o) && !o.length)){return true;}return false;},
-			array:    function(o){return (Array.isArray(o) || $type(o.length) === 'number');},
+			array:    function(o){return (Array.isArray(o) || typeof o.length === 'number');},
 			string:   function(o){return (typeof o == 'string' || o instanceof String);},
 			object:   function(o){return (o.constructor.toString().indexOf('function Object()') == 0);},
 			element:  function(o){return ('nodeType' in o && o.nodeType === 1 && 'cloneNode' in o);},
