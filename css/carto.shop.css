@@ -3,10 +3,11 @@ html, body {
 	height: 100%;
 	padding: 0;
 	margin: 0;
-	background:#e5e6e0;
-	color:#b6b7b4;
+	background:#ffffff;
+	color:#555;
 }
 a{color:#7f99ca;text-decoration:none;outline:0;}
+p{color:#aaa;}
 ul{list-style:none;}
 button::-moz-focus-inner{border:0;padding:0;}
 input{outline:0;}
@@ -18,27 +19,33 @@ kbd{
 	font-size: 10px;
 	line-height: 10px;
 	color: #242729;
-	text-shadow: 0 1px 0 #FFF;
+	text-shadow: 0 1px 0 #fff;
 	background-color: #e1e3e5;
 	border: 1px solid #adb3b9;
 	border-radius: 3px;
-	box-shadow: 0 1px 0 rgba(12,13,14,0.2),0 0 0 2px #FFF inset;
+	box-shadow: 0 1px 0 rgba(12,13,14,0.2),0 0 0 2px #fff inset;
 	white-space: nowrap;
 }
 
+.breakword{word-wrap:break-word;}
 
-
-.menu{padding:2px 10px;color:#33333e;}
+.menu{padding:0 10px;margin-bottom:10px;background-color:#fafafb;box-shadow:0 1px 0 rgba(12,13,14,0.15),0 0 0 transparent,0 0 0 transparent,0 0 0 transparent;}
 .menu > li{display:inline-block;padding:0 8px;}
-.menu > li.active{box-shadow:inset 0 2px 2px rgba(0,0,0,.2);border-radius:2px;}
+.menu > li.active{background:linear-gradient(to top,#f48024,#f48024 2px,#eff0f1 2px,#eff0f1);}
 .menu > li > span{display:inline-block;font-weight:bold;line-height:26px;cursor:default;}
 .main-window{font-size:0;display:flex;height:calc(100% - 60px);padding:0 10px;}
+
+.cartoshop-splash{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;background:rgba(255,255,255,.8);}
+.cartoshop-splash .cartoshop-splash-center{width:300px;margin:10% auto 0 auto;background:#6985a0;color:white;padding:10px;border-radius:3px;box-shadow:0 1px 10px rgba(0,0,0,.2);}
+.cartoshop-splash .cartoshop-splash-center img{width:100%;}
 .cartoshop-map{display:inline-block;width:calc(100% - 30%);vertical-align:top;}
-.cartoshop-sidebar{display:inline-block;width:30%;overflow:hidden;}
+.cartoshop-sidebar{display:inline-block;width:30%;padding-left:10px;}
+.cartoshop-sidebar > header.node{padding-left:0;}
 .cartoshop-footer{padding:4px 10px 0 10px;}
 .cartoshop-templates{display:none;}
 
 textarea.cartoshop-cartocss{height:100px;max-height:100%;}
+textarea.cartoshop-textarea-big{height:100px;max-height:100%;}
 
 
 /* INI-buttons */
@@ -91,7 +98,7 @@ textarea{height:auto;}
 /* END-buttons */
 /* INI-dropdown */
 .dropdown-toggle{position:relative;}
-.dropdown-menu{position:absolute;left:0;z-index:9999999;display:none;min-width:300px;list-style:none;background:linear-gradient(to bottom,#fff,#fff 1px,#efefef 1px,#ededed);color:#444;font-size:13px;text-align:left;box-shadow:0 1px 8px rgba(100,100,100,.4);border-bottom:1px solid #aaa;border-radius:2px;z-index:100;}
+.dropdown-menu{position:absolute;left:0;z-index:9999999;display:none;min-width:300px;list-style:none;background:linear-gradient(to bottom,#fff,#fff 1px,#efefef 1px,#ededed);font-size:13px;text-align:left;box-shadow:0 1px 8px rgba(100,100,100,.4);border-bottom:1px solid #aaa;border-radius:2px;z-index:100;}
 .dropdown-toggle.active > .dropdown-menu{display:block;cursor:default;}
 .dropdown-toggle > ul.dropdown-menu.padded{margin:10px 0;font-size:0.9em;}
 .dropdown-toggle > ul.dropdown-menu.padded li{padding:0 10px;min-height:19px;color:#555;font-size:1em;}
@@ -100,7 +107,7 @@ textarea{height:auto;}
 .dropdown-menu .datepicker{padding:4px;}
 .dropdown-menu > .wrapper{padding:4px;}
 .dropdown-menu > .wrapper .btn-group:last-child{margin:5px;}
-.dropdown-menu h4{margin:0 0 6px 0;padding:0;}
+.dropdown-menu h4{padding:0;}
 .dropdown-menu.padded{padding:8px;}
 .dropdown-menu .widget{margin:10px 0;}
 .dropdown-menu > ul{font-size:0;}
@@ -109,6 +116,43 @@ textarea{height:auto;}
 .dropdown-menu > ul > li .btn-group:last-child{margin-top:10px;}
 /* END-dropdown */
 
+/* INI-node */
+.node{position:relative;padding:10px;}
+.node + .node{border-top:1px solid #eee;}
+.node h1{font-size:26px;line-height:26px;padding-bottom:2px;}
+.node h2{font-size:16px;}
+.node h2 > *{font-size:inherit;color:inherit;}
+.node h1 + .btn-group{margin-top:0 !important;}
+.node p{color:#777;}
+.node header{padding-bottom:20px;}
+.node header > h2{padding:0;}
+.node .image{display:inline-block;vertical-align:top;}
+.node .image > img{display:block;border-top:1px solid transparent;}
+.node .image > i{display:block;background:#7ba7ff;color:white;text-align:center;font-style:normal;border-radius:2px;box-shadow:inset 0 1px 6px rgba(0,0,0,.2);}
+.node .wrapper{display:inline-block;vertical-align:top;}
+.node .image + .wrapper{margin-left:10px;}
+.node .image.s32  + .wrapper{width:calc(100% - 32px - 20px);}
+.node .image.s48  + .wrapper{width:calc(100% - 48px - 20px);}
+.node .image.s64  + .wrapper{width:calc(100% - 64px - 20px);}
+.node .image.s120 + .wrapper{width:calc(100% - 120px - 20px);}
+.node .image.s32  img{width:32px !important;}
+.node .image.s48  img{width:48px;}
+.node .image.s64  img{width:64px;}
+.node .image.s120 img{width:120px;}
+.node .image.s16  i{width:16px;height:16px;line-height:16px;font-size:1em;}
+.node .image.s32  i{width:32px;height:32px;line-height:32px;font-size:1.3em;}
+.node .image.s48  i{width:48px;height:48px;line-height:48px;font-size:2.6em;}
+.node .image.s64  i{width:64px;height:64px;line-height:64px;font-size:3em;}
+.node .image.s120 i{width:120px;height:120px;line-height:120px;font-size:1em;}
+.node .description{margin-bottom:10px;line-height:1.5;}
+.node .description p + p{margin-top:20px;}
+.node > .image.s64  + .wrapper + .node{padding-left:32px;}
+.node > .image.s64  + .wrapper + .node:before{position:absolute;left:8px;display:block;width:16px;height:16px;border-left:1px solid #888;border-bottom:1px solid #888;content:" ";}
+/* END-node */
+/* INI-Box */
+.box{margin:10px 0;}
+.box + .btn-group{margin-top:10px;}
+/* END-Box */
 /* INI-Table */
 ul.table{display:table;width:100%;margin:10px 0;}
 ul.table:not(.grey-light){color:#444;}
@@ -189,3 +233,4 @@ ul.table.clean > li > div{padding:0;background:transparent;}
 .leaflet-container{cursor:default !important;}
 .leaflet-controls-pane{z-index:10;}
 .leaflet-controls-pane > .leaflet-control-geojson{background:rgba(0,0,255,.1);z-index:10;border:1px dashed #0088cc;}
+.icon-vertex{background:#fff;border:1px solid #666;width:8px;height:8px;}

@@ -1,5 +1,5 @@
 
-	addEventListener('load',function(){
+	function widgets_dropdown_init(e){
 		/* INI-dropdown */
 		if( !window.VAR ){window.VAR = {};}
 		window.VAR.dropdown = false;
@@ -31,7 +31,12 @@
 			}
 		});
 		/* END-dropdown */
-	});
+	};
+	
+	addEventListener('DOMContentLoaded',widgets_dropdown_init);
+	if (document.readyState === 'complete' || document.readyState === 'loaded' || document.readyState === 'interactive') {
+		widgets_dropdown_init();
+	}
 
 	function dropdown(elem){
 		this.elem = elem;

@@ -10,52 +10,202 @@
 	<link rel="stylesheet" href="css/carto.shop.css" />
 	<link rel="stylesheet" href="http://fontawesome.io/assets/font-awesome/css/font-awesome.css" />
 
-	<script type="text/javascript" src="leaflet/leaflet.js"></script>
-	<script type="text/javascript" src="leaflet/cube.js"></script>
+	<script type="text/javascript" src="js/leaflet/leaflet.js"></script>
+	<script type="text/javascript" src="js/leaflet/cube.js"></script>
 	<script type="text/javascript" src="js/carto.on/carto.on.js"></script>
 	<script type="text/javascript" src="js/carto.on/carto.on.layers.js"></script>
 	<script type="text/javascript" src="js/carto.on/wkx.min.js"></script>
+	<script type="text/javascript" src="js/carto.on/cube.js"></script>
 	<script type="text/javascript" src="js/mustache.min.js"></script>
 	<script type="text/javascript" src="js/carto.on/carto.shop.js" async defer></script>
 	<script type="text/javascript" src="js/widgets/widget.tabs.js" async defer></script>
 	<script type="text/javascript" src="js/dropdown.js" async defer></script>
 </head>
 <body class="cartoshop">
+	<div class="cartoshop-splash">
+		<div class="cartoshop-splash-center">
+			<img src="images/splash.min.png">
+			<p>This splash screen is totally unnecessary</p>
+		</div>
+	</div>
 	<ul class="menu">
-		<li class="dropdown-toggle"><span>Archive</span>
+		<li class="dropdown-toggle"><span><i class="fa fa-archive" aria-hidden="true"></i> Archive</span>
 			<div class="dropdown-menu padded">
-				<h4><i class="fa fa-plus"></i> Archive Menu</h4>
-				<p>Testing ....</p>
+				<h4><i class="fa fa-archive" aria-hidden="true"></i> Archive Menu</h4>
+				<p>Archive Menu</p>
+				<ul class="table">
+					<li><div><a href="javascript:" class="cartoshop-option-import-map"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Import map</a></div></li>
+					<li><div><a href="javascript:" class="cartoshop-option-export-map"><i class="fa fa-cloud-download" aria-hidden="true"></i> Export map</a></div></li>
+				</ul>
 			</div>
 		</li>
-		<li class="dropdown-toggle"><span>Edit</span>
+		<li class="dropdown-toggle"><span><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
 			<div class="dropdown-menu padded">
-				<h4><i class="fa fa-plus"></i> Edit Menu</h4>
-				<p>Testing ....</p>
+				<h4><i class="fa fa-pencil" aria-hidden="true"></i> Edit Menu</h4>
+				<p>Edition menu</p>
+				<ul class="table">
+					<li><div><a href="javascript:" class="cartoshop-option-edit-selected"><i class="fa fa-pencil" aria-hidden="true"></i> Edit selected</a></div></li>
+				</ul>
 			</div>
 		</li>
 		<li>Select</li>
+		<li class="dropdown-toggle"><span><i class="fa fa-search" aria-hidden="true"></i> View</span>
+			<div class="dropdown-menu padded">
+				<h4><i class="fa fa-search" aria-hidden="true"></i> View Menu</h4>
+				<p>Visualization options</p>
+				<ul class="table">
+					<li class="cartoshop-option-go-to"><div class="dropdown-toggle"><a href="javascript:"><i class="fa fa-long-arrow-right" aria-hidden="true"></i> Go to position</a>
+						<div class="dropdown-menu padded">
+							<h4><i class="fa fa-long-arrow-right" aria-hidden="true"></i> Go to position</h4>
+							<p>Go to latitude and longitude position</p>
+							<div class="box">
+								<input type="text" name="textarea-go-to" placeholder="40.40927061480857,-3.7368214130401616">
+							</div>
+							<div class="btn-group mini right">
+								<div class="btn btn-close"><i class="fa fa-close" aria-hidden="true"></i> Close</div>
+								<div class="btn btn-ok"><i class="fa fa-long-arrow-right" aria-hidden="true"></i> Go</div>
+							</div>
+						</div>
+					</div></li>
+				</ul>
+			</div>
+		</li>
 		<li class="dropdown-toggle"><span><i class="fa fa-th-list" aria-hidden="true"></i> Layer</span>
 			<div class="dropdown-menu padded">
-				<h4><i class="fa fa-th-list" aria-hidden="true"></i> Layer Menu</h4>
-				<ul class="table strip cartoshop-layer-list">
-					<li class="header"><div class="collapse"></div><div>Layer Type</div><div>Layer ID</div></li>
-				</ul>
-				<div><a class="cartoshop-layer-add" href="javascript:"><i class="fa fa-plus"></i> Add new layer</a></div>
+				<ul class="tabs widget-tabs">
+				<li class="tab">
+					<div class="label">
+						<span class="ellipsis"><i class="fa fa-th-list" aria-hidden="true"></i> Layer List</span>
+					</div>
+					<div class="content">
+						<h4><i class="fa fa-th-list" aria-hidden="true"></i> Layer List</h4>
+						<p>Layers loaded in this map</p>
+						<ul class="table strip cartoshop-layer-list">
+							<li class="header">
+								<div class="collapse"></div>
+								<div>Layer Type</div>
+								<div>Layer ID</div>
+								<div></div>
+							</li>
+						</ul>
+					</div>
+				</li>
+				<li class="tab">
+					<div class="label">
+						<span class="ellipsis"><i class="fa fa-plus" aria-hidden="true"></i> Add Layer</span>
+					</div>
+					<div class="content cartoshop-option-add-layer">
+						<h4><i class="fa fa-plus" aria-hidden="true"></i> Add Layer</h4>
+						<p>Write down the layer configuration</p>
+						<div class="box">
+							<textarea name="textarea-new-layer" class="cartoshop-textarea-big" placeholder="{type:'tiled' ...}"></textarea>
+						</div>
+						<div class="btn-group mini right">
+							<div class="btn btn-close"><i class="fa fa-close" aria-hidden="true"></i> Close</div>
+							<div class="btn btn-ok"><i class="fa fa-plus" aria-hidden="true"></i> Add</div>
+						</div>
+					</div>
+				</li>
 			</div>
 		</li>
 	</ul>
 	<div class="main-window">
 		<div class="cartoshop-map"></div>
-		<div class="cartoshop-sidebar"></div>
+		<div class="cartoshop-sidebar">
+			<header class="node">
+				<div class="image s32"><i class="fa fa-th-list" aria-hidden="true"></i></div>
+				<div class="wrapper">
+					<h2>Welcome to Carto.shop</h2>
+					<p>Carto.shop is an app designed to visualize, generate and modify maps.</p>
+				</div>
+			</header>
+			<div class="box">
+				<h4>Handle separated layers</h4>
+				<p>Carto.shop can work with a pile of separated layers. You can modify the differtent properties of each layer easily.</p>
+			</div>
+			<div class="box">
+				<h4>Load complex map configs</h4>
+				<p>Carto.shop is able to load complex maps configs, at this alpha stage is not compatible with 100% specs but it is designed
+				 to accept the challenge.</p>
+			</div>
+			<div class="box">
+				<h4>Cube layers</h4>
+				<p>Carto.shop can load a custom type of layer for building mapping. Welcome to the voxel party!!</p>
+			</div>
+		</div>
 	</div>
 	<div class="cartoshop-footer">
 		<div class="cartoshop-footer-keys"></div>
 	</div>
 
+
+
+
+
+
 	<div class="cartoshop-templates">
-		<section class="cartoshop-sidebar-layer-cartodb">
-			<h2>Layer: cartodb</h2>
+		<script type="text/html" id="template-cartoshop-layer-list-node">
+			<li class="cartoshop-layer-list-node cartoshop-layer-list-node-{{layer.id}}">
+				<div><i class="fa fa-eye" aria-hidden="true"></i></div>
+				<div>{{layer.type}}</div>
+				<div><a href="javascript:">{{layer.id}}</a></div>
+				<div class="btn-group mini">
+					<div class="btn dropdown-toggle"><span><i class="fa fa-cog" aria-hidden="true"></i></span>
+						<div class="dropdown-menu padded">
+							<h4><i class="fa fa-cog" aria-hidden="true"></i> Layer Options</h4>
+							<p>Layer options</p>
+							<ul class="table">
+								<li><div><a href="javascript:" class="cartoshop-option-layer-duplicate"><i class="fa fa-clone" aria-hidden="true"></i> Duplicate layer</a></div></li>
+								<li><div><a href="javascript:" class="cartoshop-option-layer-render"><i class="fa fa-paint-brush" aria-hidden="true"></i> Render layer</a></div></li>
+								<li><div><a href="javascript:" class="cartoshop-option-layer-remove" data-id="{{layer.id}}"><i class="fa fa-trash" aria-hidden="true"></i> Remove layer</a></div></li>
+							</ul>
+							<div class="btn-group mini right">
+								<div class="btn btn-close"><i class="fa fa-close" aria-hidden="true"></i> Close</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</li>
+		</script>
+		<script type="text/html" id="template-cartoshop-sidebar-layer-cartodb">
+			<header class="node">
+					<div class="btn-group mini">
+						<div class="btn dropdown-toggle"><span><i class="fa fa-cogs" aria-hidden="true"></i> Options</span>
+							<div class="dropdown-menu padded">
+								<ul class="tabs widget-tabs">
+								<li class="tab">
+									<div class="label">
+										<span class="ellipsis"><i class="fa fa-th-list" aria-hidden="true"></i> Layer List</span>
+									</div>
+									<div class="content">
+										<h4><i class="fa fa-th-list" aria-hidden="true"></i> Layer List</h4>
+										<p>Layers loaded in this map</p>
+										<ul class="table strip cartoshop-layer-list">
+											<li class="header"><div class="collapse"></div><div>Layer Type</div><div>Layer ID</div></li>
+										</ul>
+									</div>
+								</li>
+								<li class="tab">
+									<div class="label">
+										<span class="ellipsis"><i class="fa fa-plus" aria-hidden="true"></i> Add Layer</span>
+									</div>
+									<div class="content">
+										<h4><i class="fa fa-plus" aria-hidden="true"></i> Add Layer</h4>
+										<p>Write down the layer configuration</p>
+										<div class="box">
+											<textarea name="new-layer"></textarea>
+										</div>
+										<div class="btn-group mini right">
+											<div class="btn btn-layer-add"><i class="fa fa-plus" aria-hidden="true"></i> Add</div>
+										</div>
+									</div>
+								</li>
+							</div>
+						</div>
+					</div><h2>Layer</h2>
+					<p>{{layer.type}}</p>
+					<!---->
+			</header>
 			<ul class="tabs widget-tabs">
 				<li class="tab">
 					<div class="label">
@@ -78,7 +228,10 @@
 						<h4><i class="fa fa-file-text-o" aria-hidden="true"></i> SQL</h4>
 						<p>Edit SQL query</p>
 						<div class="box">
-							<textarea class="cartoshop-cartocss">{{layer.options.sql}}</textarea>
+							<textarea name="sql">{{layer.options.sql}}</textarea>
+						</div>
+						<div class="btn-group right">
+							<div class="btn btn-sql-update"><i class="fa fa-refresh" aria-hidden="true"></i> Update</div>
 						</div>
 					</div>
 				</li>
@@ -90,13 +243,67 @@
 						<h4><i class="fa fa-file-text-o" aria-hidden="true"></i> CartoCSS</h4>
 						<p>Edit CartoCSS sheet</p>
 						<div class="box">
-							<textarea class="cartoshop-cartocss">{{layer.options.cartocss}}</textarea>
+							<textarea name="cartocss" class="cartoshop-cartocss">{{layer.options.cartocss}}</textarea>
+						</div>
+						<div class="btn-group right">
+							<div class="btn btn-cartocss-update"><i class="fa fa-refresh" aria-hidden="true"></i> Update</div>
 						</div>
 					</div>
 				</li>
 			</ul>
 
-		</section>
+		</script>
+		<script type="text/html" id="template-cartoshop-sidebar-layer-tiled">
+			<header class="node">
+				<div class="image s32"><i class="fa fa-th-list" aria-hidden="true"></i></div>
+				<div class="wrapper">
+					<h2>Layer</h2>
+					<p>{{layer.type}}</p>
+				</div>
+			</header>
+			<ul class="tabs widget-tabs">
+				<li class="tab">
+					<div class="label">
+						<span class="ellipsis"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
+					</div>
+					<div class="content">
+						<h4><i class="fa fa-pencil" aria-hidden="true"></i> Edit</h4>
+						<p>Edit layer basic params</p>
+						<ul class="table radio">
+							<li><div>ID</div><div>{{layer.id}}</div></li>
+							<li><div>Type</div><div>{{layer.type}}</div></li>
+							<li><div>Template</div><div>{{layer.options.urlTemplate}}</div></li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+
+		</script>
+		<script type="text/html" id="template-cartoshop-sidebar-layer-cubes">
+			<header class="node">
+				<div class="image s32"><i class="fa fa-th-list" aria-hidden="true"></i></div>
+				<div class="wrapper">
+					<h2>Layer</h2>
+					<p>{{layer.type}}</p>
+				</div>
+			</header>
+			<ul class="tabs widget-tabs">
+				<li class="tab">
+					<div class="label">
+						<span class="ellipsis"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
+					</div>
+					<div class="content">
+						<h4><i class="fa fa-pencil" aria-hidden="true"></i> Edit</h4>
+						<p>Edit layer basic params</p>
+						<ul class="table radio">
+							<li><div>ID</div><div>{{layer.id}}</div></li>
+							<li><div>Type</div><div>{{layer.type}}</div></li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+
+		</script>
 	</div>
 
 		<script type="text/javascript">

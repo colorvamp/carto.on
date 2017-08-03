@@ -24,25 +24,6 @@
 					//this.controlsShow();
 				}.bind(this));
 			}
-
-			if( this.config.dispatchEvents
-			 && obj._type && obj._type == 'cube' ){
-				/* Save new information in layer config */
-				//this.cubes.push({'center':,'angle':});
-				
-				obj.on('click',function(e){
-					var event = new CustomEvent('cartoon-marker-click',{'detail':{'map':ths.map,'marker':this,'layer':layer},'bubbles':true,'cancelable':true});
-					this._map._container.dispatchEvent(event);
-				});
-				obj.on('dragstart',function(e){
-					var event = new CustomEvent('cartoon-marker-dragstart',{'detail':{'map':ths.map,'marker':this,'layer':layer},'bubbles':true,'cancelable':true});
-					this._map._container.dispatchEvent(event);
-				});
-				obj.on('dragend',function(e){
-					//console.log(this.getLatLng());
-				});
-
-			}
 		}
 		hide(){
 			var a;
@@ -133,6 +114,7 @@
 				}
 			}
 			//if(!$is.formData(data)){xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');}
+			//if(!$is.formData(data)){xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');}
 			xhr.send(data);
 		};
 	}
@@ -167,6 +149,11 @@
 			}
 		}
 		sql(sql){
+			/* Empty the current layer first */
+			this._layer.eachLayer(function(lyr){
+				lyr.remove();
+			});
+
 			var ths = this;
 			var api_url = this._ilayer.options.maps_api_template || false;
 			if( !api_url ){
@@ -203,20 +190,110 @@
 							delete ths.tmp_arrayBuffer;
 							var geojson = ths.tmp_geometry.toGeoJSON();
 							delete ths.tmp_geometry;
-							//console.log(geojson);
-							var styles = {weight:1};
-if( ths._cartoon_cartocss_apply ){
-/* Apply styles if available */
-styles = ths._cartoon_cartocss.style({'id':'european_countries_e','row':row});
-}
-							var geoj = L.geoJson(geojson,styles);
+
+							var geoj = L.geoJson(geojson);
 							geoj._type = 'geojson';
+							geoj._sql  = sql;
 							geoj._row  = row;
+
+							if( ths._cartoon_cartocss_apply ){
+								ths._cartoon_cartocss.layer(geoj);
+							}
+
 							ths.add(geoj);
 						}
 					});
 				}
 			});
+		}
+		cartocss(theme){
+			this._cartoon_cartocss.parse(theme);
+
+			this._layer.eachLayer(function(lyr){
+				this._cartoon_cartocss.layer(lyr);
+			}.bind(this));
+		}
+	}
+	class _cartoon_layer_cubes extends _cartoon_layer{
+		constructor(ilayer,config){
+			super(ilayer,config);
+			this._ilayer = ilayer;
+			this._type = 'cubes';
+			this._layer = L.layerGroup();
+
+			/* Voxel party! Render the list of cubes */
+			if( ilayer.options.cubes ){
+				ilayer.options.cubes.forEach(function(c,ck){
+					//FIXME: solo si no viene id
+
+//FIXME: necesito un helper para cubes
+					var id     = this._guid();
+					var cube   = new _cube();
+					var icon   = L.divIcon({html:cube._container,'iconSize':[0,0]});
+					var marker = L.marker(c.center,{'icon':icon,draggable:'true'});
+					marker._cube = cube;
+					marker._type = 'cube';
+
+					//if( o != 1 ){cube.scale(o);}
+					if( c.angle ){cube.angle(c.angle);}
+					if( c.height ){cube.height(c.height);}
+					this.add(marker);
+				}.bind(this));
+			}
+		}
+		addTo(map){
+			/* If we change the map, remove all old event listeners */
+			if( this._map && this._on_zoomend ){
+				this._map.off('zoomend',this._on_zoomend);
+			}
+
+
+			this._map = map;
+			this._update();
+
+			/* We Need a listener for resizing */
+			this._on_zoomend = function(){this._update();}.bind(this);
+			this._map.on('zoomend',this._on_zoomend);
+
+			return super.addTo(map);
+		}
+		add(obj){
+			if( obj._type !== 'cube' ){return false;}
+			if( this.config.dispatchEvents ){
+				obj.on('click',function(e){
+					var event = new CustomEvent('cartoon-marker-click',{'detail':{'map':this._map,'marker':obj,'layer':this},'bubbles':true,'cancelable':true});
+					this._map._container.dispatchEvent(event);
+				}.bind(this));
+				obj.on('dragstart',function(e){
+					var event = new CustomEvent('cartoon-marker-dragstart',{'detail':{'map':this._map,'marker':obj,'layer':this},'bubbles':true,'cancelable':true});
+					this._map._container.dispatchEvent(event);
+				}.bind(this));
+				obj.on('dragend',function(e){
+					//console.log(this.getLatLng());
+				}.bind(this));
+
+			}
+
+			var o = this._scale();
+			obj._cube.scale(o);
+			return super.add(obj);
+		}
+		_update(){
+			var o = this._scale();
+			this._layer.eachLayer(function(lyr){
+				lyr._cube.scale(o);
+			});
+		}
+		_scale(){
+			if( !this._map ){return 1;}
+			var metersPerPixel = 40075017 * Math.abs(Math.cos(this._map.getCenter().lat * 180/Math.PI)) / Math.pow(2, 18 + 8);
+			var zoom = this._map.getZoom();
+			var o = 1;
+			if( zoom != 18 ){
+				var mpp  = 40075017 * Math.abs(Math.cos(this._map.getCenter().lat * 180/Math.PI)) / Math.pow(2, this._map.getZoom() + 8);
+				o = metersPerPixel/mpp;
+			}
+			return o;
 		}
 	}
 
@@ -231,9 +308,22 @@ styles = ths._cartoon_cartocss.style({'id':'european_countries_e','row':row});
 		this.config.dispatchEvents = true;
 	};
 	_cartoon_layers.prototype.register = function(layer){
+		if( $is.string(layer) ){
+			/* Validate string layers */
+			try {
+				layer = JSON.parse(layer);
+			} catch (e) {
+				console.log('Invalid layer');
+				return false;
+			}
+		}
+
 		var ths = this;
 		if( !layer.id ){layer.id = this._guid();}
-		if( !layer.type ){return false;}
+		if( !layer.type ){
+			console.log('Invalid layer');
+			return false;
+		}
 		layer.type = layer.type.toLowerCase();
 
 		if( this.map ){
@@ -247,49 +337,8 @@ styles = ths._cartoon_cartocss.style({'id':'european_countries_e','row':row});
 				_cartoon_layer.addTo(this.map);
 			}
 			if( layer.type == 'cubes' ){
-				var metersPerPixel = 40075017 * Math.abs(Math.cos(this.map.getCenter().lat * 180/Math.PI)) / Math.pow(2, 18 + 8);
-				var zoom = ths.map.getZoom();
-				var o = 1;
-				if( zoom != 18 ){
-					var mpp  = 40075017 * Math.abs(Math.cos(this.map.getCenter().lat * 180/Math.PI)) / Math.pow(2, this.map.getZoom() + 8);
-					o = metersPerPixel/mpp;
-				}
-
-				layer._layer = L.layerGroup().addTo(this.map);
-
-				/* Voxel party! Render the list of cubes */
-				layer.cubes.forEach(function(c,ck){
-					//FIXME: solo si no viene id
-
-//FIXME: necesito un helper para cubes
-					var id     = ths._guid();
-					var cube   = new _cube();
-					var icon   = L.divIcon({html:cube._container,'iconSize':[0,0]});
-					var marker = L.marker(c.center,{'icon':icon,draggable:'true'});
-					marker._cube = cube;
-					marker._type = 'cube';
-
-					if( o != 1 ){cube.scale(o);}
-					if( c.angle ){cube.angle(c.angle);}
-					if( c.height ){cube.height(c.height);}
-					layer.add(marker);
-				});
-
-				/* We Need a listener for resizing */
-				this.map.on('zoomend',function(){
-					var metersPerPixel = 40075017 * Math.abs(Math.cos(ths.map.getCenter().lat * 180/Math.PI)) / Math.pow(2, 18 + 8);
-
-					/* zoom 18 == 1:1 */
-					var zoom = ths.map.getZoom();
-					var o = 1;
-					if( zoom != 18 ){
-						var mpp  = 40075017 * Math.abs(Math.cos(ths.map.getCenter().lat * 180/Math.PI)) / Math.pow(2, ths.map.getZoom() + 8);
-						o = metersPerPixel/mpp;
-					}
-					layer._layer.eachLayer(function(layr){
-						layr._cube.scale(o);
-					});
-				});
+				_cartoon_layer = new _cartoon_layer_cubes(layer);
+				_cartoon_layer.addTo(this.map);
 			}
 		}
 
@@ -299,14 +348,30 @@ styles = ths._cartoon_cartocss.style({'id':'european_countries_e','row':row});
 			this.map._container.dispatchEvent(event);
 		}
 
-		/* Callbacks */
-		
-
 		return this.layers[layer.id] = layer;
 	};
 	_cartoon_layers.prototype.empty = function(){
 		this.layers = {};
 		//FIXME: remove from map
+		//FIXME: remove callbacks
+	}
+	_cartoon_layers.prototype.remove = function(layer){
+		if( !this.layers[layer._id] ){return false;}
+
+		delete this.layers[layer._id];
+		if( ('remove' in layer._layer) ){layer._layer.remove();}
+
+		if( this.map && this.config.dispatchEvents ){
+			/* Notify the layer unregistering */
+			var event = new CustomEvent('cartoon-layer-remove',{'detail':{'map':this.map,'layer':layer},'bubbles':true,'cancelable':true});
+			this.map._container.dispatchEvent(event);
+		}
+	}
+	_cartoon_layers.prototype.render = function(layer){
+		if( layer._type != 'cartodb' ){
+			console.log('Cant render this type yet');
+			return false;
+		}
 	}
 	_cartoon_layers.prototype.get = function(id){
 		if( !this.layers[id] ){return false;}

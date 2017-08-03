@@ -1,10 +1,13 @@
+	/* Cartoon Core Class
+	 * Class for generating maps based in a config object
+	 */
 	function _cartoon(m){
 		if( $is.string(m) ){
 			m = document.querySelector(m);
 		}
 		this.holder = m;
 		this.layers = new _cartoon_layers();
-		this.map    = false;
+		this._map   = false;
 		this.config();
 //FIXME: configurable?
 this.dispatchEvents = true;
@@ -24,6 +27,18 @@ this.dispatchEvents = true;
 
 			head.appendChild(script);
 		}
+	};
+	_cartoon.prototype.setCenter = function(...args){
+		if( !this._map ){return false;}
+		if( args.length == 1 ){
+			if( $is.string(args[0]) && args[0].indexOf(',') ){
+				/* Support for string coords */
+				var coords = args[0].split(',');
+				return this._map.panTo(new L.LatLng(coords[0],coords[1]));
+			}
+		}
+
+		console.log('no support yet for this format');
 	};
 	_cartoon.prototype.config = function(config){
 		this._config = config;
@@ -55,23 +70,23 @@ this.dispatchEvents = true;
 	};
 	_cartoon.prototype.render = function(){
 		var ths = this;
-//window.L_PREFER_CANVAS = true;
-		this.map = L.map(this.holder,{zoomControl:false}).setView(this._config.center,this._config.zoom);
+		//window.L_PREFER_CANVAS = true;
+		this._map = L.map(this.holder,{zoomControl:false}).setView(this._config.center,this._config.zoom);
 		this.layers._cartoon = this;
-		this.layers.map = this.map;
+		this.layers.map = this._map;
 
 		if( this.dispatchEvents ){
-			if( !('cartoon_handlerZoomChange' in this.map) ){
-				this.map.on('zoomend',function(){
-					var zoom  = ths.map.getZoom();
-					var event = new CustomEvent('cartoon-zoom-change',{'detail':{'map':ths.map,'zoom':zoom},'bubbles':true,'cancelable':true});
+			if( !('cartoon_handlerZoomChange' in this._map) ){
+				this._map.on('zoomend',function(){
+					var zoom  = ths._map.getZoom();
+					var event = new CustomEvent('cartoon-zoom-change',{'detail':{'map':ths._map,'zoom':zoom},'bubbles':true,'cancelable':true});
 					ths.holder.dispatchEvent(event);
 				});
 			}
-			if( !('cartoon_handlerCenterChange' in this.map) ){
-				this.map.on('moveend',function(){
-					var center = ths.map.getCenter();
-					var event  = new CustomEvent('cartoon-center-change',{'detail':{'map':ths.map,'center':center},'bubbles':true,'cancelable':true});
+			if( !('cartoon_handlerCenterChange' in this._map) ){
+				this._map.on('moveend',function(){
+					var center = ths._map.getCenter();
+					var event  = new CustomEvent('cartoon-center-change',{'detail':{'map':ths._map,'center':center},'bubbles':true,'cancelable':true});
 					ths.holder.dispatchEvent(event);
 				});
 			}
@@ -83,8 +98,8 @@ this.dispatchEvents = true;
 			var l = ths.layers.register(layer);
 		});
 
-		//L.marker([42.465852227987,-2.451798543334]).addTo(this.map);
-		//L.marker([42.460346499269,-2.4478838592768]).bindPopup("<h4>Hotel Ciudad de Logroño</h4>").addTo(this.map);
+		//L.marker([42.465852227987,-2.451798543334]).addTo(this._map);
+		//L.marker([42.460346499269,-2.4478838592768]).bindPopup("<h4>Hotel Ciudad de Logroño</h4>").addTo(this._map);
 	};
 
 	/* Cartoon Cartocss parser
@@ -93,11 +108,25 @@ this.dispatchEvents = true;
 	function _cartoon_cartocss(){
 		this.rules = [];
 	};
+	_cartoon_cartocss.prototype._styles = {
+		 stroke: true
+		,color: '#3388ff'
+		,weight: 1
+		,opacity: 1
+		,lineCap: 'round'
+		,lineJoin: 'round'
+		,dashArray: null
+		,dashOffset: null
+		,fill: true
+		,fillOpacity: 0.2
+		,fillRule: 'evenodd'
+	};
 	_cartoon_cartocss.prototype.style = function(props){
 		var a,v,k,selector = '',selector_,valid,name;
-var styles = {};
+		var styles = {};
 		if( props.id ){selector += '#' + props.id;}
-console.log(selector);
+		//FIXME: faltan las clases y otras cosas
+		//console.log(selector);
 
 		this.rules.forEach(function(v,k){
 			selector_ = v.selector.base.join(' ');
@@ -131,15 +160,27 @@ console.log(selector);
 			if( a == 'line-opacity' ){name = 'opacity';}
 			final_styles[name] = styles[a];
 		}
-console.log(final_styles);
-		return final_styles;
+
+		return $extend(this._styles,final_styles);
 	};
 	_cartoon_cartocss.prototype.layer = function(layer){
+		if( !('setStyle' in layer) ){
+			console.log('invalid layer');
+			return false;
+		}
+		var tablename = '';
+		if( layer._sql ){
+			this.tmp = (/from ([^ ]+)/ig).exec(layer._sql);
+			tablename = this.tmp[1];
+		}
 
+		var style = this.style({'id':tablename,'row':layer._row || {}});
+		return layer.setStyle(style);
 	};
 	_cartoon_cartocss.prototype.parse = function(blob,props){
 		/* Remove comments */
 		blob = blob.replace(/\/\*.*?\*\//g,'');
+		blob += '\n';
 
 		blob.replace(/([#\.a-z]{1}[^\{]+)\{([^\}]+)\}\n/g,function(rule,selector,styles){
 			selector = selector.replace(/\[([^\]]+)\]/g,function(n){
@@ -175,6 +216,7 @@ console.log(final_styles);
 				 'selector':selector_final
 				,'styles':styles_final
 			});
+			return '';
 		}.bind(this));
 	}
 
@@ -185,6 +227,7 @@ console.log(final_styles);
 				map.addLayer(this._layers[i]);
 			}
 
+			this._cartoon_status = 'normal';
 			map.on('zoomend',this.update_.bind(this));
 		},
 		'onRemove': function (map) {
@@ -194,18 +237,81 @@ console.log(final_styles);
 
 			map.off('zoomstart zoomend',this.update_.bind(this));
 		},
+		'onBlur': function(){
+			if( this._cartoon_status == 'editing' ){
+				this.editEnd();
+			}
+			if( this._cartoon_status == 'selected' ){
+				this.controlsHide();
+			}
+		},
 		'update_': function(e){
 			if( e.type == 'zoomend' && this._cartoon_status == 'selected' ){
 				//FIXME: no es la mejor manera de recalcular
 				this.controlsShow();
 			}
 		},
+		'editStart': function(){
+			if( !this._map ){return false;}
+			if( this._cartoon_status == 'editing' ){return false;}
+			if( !this._layer_edit ){this._layer_edit = L.layerGroup().addTo(this._map);}
+			if( this._cartoon_status == 'selected' ){this.controlsHide();}
+			this._cartoon_status = 'editing';
+
+			var vertex = L.divIcon({iconSize:[8,8],className:'icon-vertex'});
+
+			this.eachLayer(function(layer){
+				if( layer instanceof L.Rectangle ){
+					console.log('im an instance of L rectangle');
+				}
+
+				if( layer instanceof L.Polyline ){
+					console.log('im an instance of L polyline');
+					//console.log(layer);
+				}
+
+				if( layer instanceof L.Marker ){
+					console.log('im an instance of L marker');
+				}
+
+				if( layer instanceof L.Polygon ){
+					var latlngs = layer.getLatLngs();
+					var geojson = layer.toGeoJSON();
+					for( var i = 0; i < latlngs.length; i++ ){
+						for( var j = 0; j < latlngs[i].length; j++ ){
+							for( var k = 0; k < latlngs[i][j].length; k++ ){
+								var marker = L.marker([latlngs[i][j][k].lat,latlngs[i][j][k].lng],{icon:vertex,draggable:true}).addTo(this._map);
+								marker.on('drag',function(e){
+									var marker = e.target;
+									var position = marker.getLatLng();
+
+									this.latlngs[this.i][this.j][this.k].lat = position.lat;
+									this.latlngs[this.i][this.j][this.k].lng = position.lng;
+							
+									this.layer.setLatLngs(this.latlngs);
+								}.bind({'layer':layer,'latlngs':latlngs,'geojson':geojson,'i':i,'j':j,'k':k}));
+
+								this._layer_edit.addLayer(marker);
+							}
+						}
+					}
+				}
+
+				//if( layer.feature.geometry.type != 'MultiPolygon' ){return;}
+			}.bind(this));
+		},
+		'editEnd': function(){
+			if( this._cartoon_status != 'editing' ){return false;}
+			this._map.removeLayer(this._layer_edit);
+			this._layer_edit = false;
+			this._cartoon_status = 'normal';
+		},
 		'controlsShow': function(){
 			/* Show controls on geojson layers */
 			//FIXME: probablemente debería ser en svg?
 			if( !this._map ){return false;}
 			if( !this._map._panes.controlsPane ){return false;}
-
+			if( this._cartoon_status == 'editing' ){return false;}
 			var bounds = this.getBounds();
 
 			//FIXME: no siempre hay que volver a esconder
