@@ -23,9 +23,29 @@ cartoon.render();
 Carto.on methods
 --------
 
-#### config(object)
-Config loads an entire map configuration object for easy of use.
+#### cartoon.config(object)
+Loads an entire map configuration object for easy of use.
 
+#### cartoon.setCenter(...args)
+Helper to re-center map, it accepts a range of args:
+
+- setCenter( (string)"lat,lng" )
+
+WIP
+
+Carto.on events
+--------
+
+#### cartoon-layer-register
+Fired when a new layer is registered into the map config
+
+#### cartoon-layer-remove
+Fired when a layer is removed from the map config, the map will be updated
+
+#### cartoon-layer-visibility-change
+Fired when a layer changes its visibility status
+
+WIP
 
 
 TO-DO
