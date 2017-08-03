@@ -6,7 +6,25 @@ Carto.shop
 case for **Carto.on** leaflet based library.
 
 
+Carto.on
+========
 
+**Carto.on** is the core maps library.
+
+```
+/* Initialize cartoon object */
+var cartoon = new _cartoon('body .cartoon-holder');
+/* Load map config */
+cartoon.config({...});
+/* Render it to map */
+cartoon.render();
+```
+
+Carto.on methods
+--------
+
+#### config(object)
+Config loads an entire map configuration object for easy of use.
 
 
 
