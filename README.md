@@ -33,8 +33,32 @@ Helper to re-center map, it accepts a range of args:
 
 WIP
 
+Carto.on Layer methods
+--------
+Carto.on has a layer storage named "\_cartoon\_layers" that work with "\_cartoon\_layer" objects.
+
+#### cartoon.layer.register(object)
+Register a new layer, first param is the layer configuration object.
+
+#### cartoon.layer.remove(\_cartoon\_layer)
+Removes the layer from the map.
+
+#### cartoon.layer.get(string)
+Returns a layer based on the id.
+
+
 Carto.on events
 --------
+Carto.on use custom events to notify a variety of changes. This events bubble starting from map holder
+so you can catch them through DOM using normal event listeners.
+
+```
+/* Example to listen carto.on events */
+document.body.addEventListener('cartoon-layer-register',function(e){
+	console.log('A new layer has been registered');
+	console.log(e.detail);
+});
+```
 
 #### cartoon-layer-register
 Fired when a new layer is registered into the map config
