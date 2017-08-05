@@ -37,15 +37,26 @@ Carto.on Layer methods
 --------
 Carto.on has a layer storage named "\_cartoon\_layers" that work with "\_cartoon\_layer" objects.
 
-#### cartoon.layer.register(object)
+#### cartoon.layers.register(object)
 Register a new layer, first param is the layer configuration object.
 
-#### cartoon.layer.remove(\_cartoon\_layer)
+#### cartoon.layers.remove(\_cartoon\_layer|object)
 Removes the layer from the map.
 
-#### cartoon.layer.get(string)
+#### cartoon.layers.get(string)
 Returns a layer based on the id.
 
+#### cartoon.layers.forEach(function)
+Iterate over all layers applying the argument callback.
+
+```
+cartoon.layers.forEach(function(layer,id){
+	console.log(layer);
+	console.log(id);
+});
+```
+#### cartoon.layers.visibleToTiled()
+Take all visible layers and render it using cartodb api resulting in one or various tiled static layer.
 
 Carto.on events
 --------
@@ -61,23 +72,62 @@ document.body.addEventListener('cartoon-layer-register',function(e){
 ```
 
 #### cartoon-layer-register
-Fired when a new layer is registered into the map config
+Fired when a new layer is registered into the map config.
 
 #### cartoon-layer-remove
-Fired when a layer is removed from the map config, the map will be updated
+Fired when a layer is removed from the map config, the map will be updated.
 
 #### cartoon-layer-visibility-change
-Fired when a layer changes its visibility status
+Fired when a layer changes its visibility status.
 
 WIP
 
+\_cartoon\_layer
+-----------
+Base class for appendable layers inside Carto.on system
+
+#### \_cartoon\_layer.addTo(map)
+Add this layer to a map object.
+
+#### \_cartoon\_layer.add(object)
+Add an object to this layer.
+
+#### \_cartoon\_layer.remove()
+Remove this layer from the parent map.
+
+#### \_cartoon\_layer.hide()
+Hide this layer. This will fire a **cartoon-layer-visibility-change** event.
+
+#### \_cartoon\_layer.show()
+Show this layer. This will fire a **cartoon-layer-visibility-change** event.
+
+#### \_cartoon\_layer.toggle()
+Toggle visibility on this layer. This will fire a **cartoon-layer-visibility-change** event.
+
+\_cartoon\_layer\_tiled extends \_cartoon\_layer
+-----------
+Class for tiled layers. All \_cartoon\_layer methods will be inherited.
+
+\_cartoon\_layer\_cartodb extends \_cartoon\_layer
+-----------
+Class for cartodb layers. All \_cartoon\_layer methods will be inherited.
+
+#### \_cartoon\_layer\_cartodb.sql(string)
+Changes the sql of this cartodb layer.
+
+#### \_cartoon\_layer\_cartodb.cartocss(string)
+Changes the style of this cartodb layer.
+
+\_cartoon\_layer\_cubes extends \_cartoon\_layer
+-----------
+Class for cube layers.
 
 TO-DO
 -----
 
 Features I would like to add.
 
-- [ ] Render Cartodb templates (mapnick)
+- [x] Render Cartodb templates (mapnick)
 - [ ] Archive -> Export map
 - [ ] Archive -> Import config
 - [x] Layer -> Add layer
@@ -96,3 +146,5 @@ Features I would like to add.
 - [ ] Bug when angle is 0 on cubes
 - [ ] Bookmark positions to fast-travel
 - [ ] quadtree algorightm to optimize layer/cubes drawing
+- [ ] When modify sql or cartocss in a cartodb layer update ilayer
+- [x] When a layer is set to invisible, update layer list icons

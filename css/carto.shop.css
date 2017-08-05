@@ -43,6 +43,7 @@ kbd{
 .cartoshop-sidebar > header.node{padding-left:0;}
 .cartoshop-footer{padding:4px 10px 0 10px;}
 .cartoshop-templates{display:none;}
+.cartoshop-layer-list{}
 
 textarea.cartoshop-cartocss{height:100px;max-height:100%;}
 textarea.cartoshop-textarea-big{height:100px;max-height:100%;}

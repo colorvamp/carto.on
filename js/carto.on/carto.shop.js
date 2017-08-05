@@ -54,6 +54,11 @@
 				e.stopPropagation();
 				_cartoshop.menu.layer.remove(e.detail.layer);
 			});
+			document.body.addEventListener('cartoon-layer-visibility-change',function(e){
+				//console.log(e.detail);
+				e.stopPropagation();
+				_cartoshop.menu.layer.event_layer_visibility_change(e.detail.layer,e.detail.visibility);
+			});
 			document.body.addEventListener('cartoon-geojson-click',function(e){
 				e.stopPropagation();
 				if( _cartoshop.vars.selected ){
@@ -120,7 +125,7 @@ _cartoshop.vars.map.layers.register({
 	}
 });
 }
-if( 0 ){
+if( 1 ){
 _cartoshop.vars.map.layers.register({
 	"type":"CartoDB",
 	"options":{
@@ -134,7 +139,7 @@ _cartoshop.vars.map.layers.register({
 	}
 });
 }
-if( 1 ){
+if( 0 ){
 _cartoshop.vars.map.layers.register({
 	 "type":"cubes"
 	,"options":{
@@ -232,6 +237,7 @@ _cartoshop.vars.map.layers.register({
 		}
 	};
 
+	/* INI-Menus */
 	_cartoshop.menu = {};
 	_cartoshop.menu.edit = {
 		'init': function(){
@@ -264,18 +270,42 @@ _cartoshop.vars.map.layers.register({
 	};
 	_cartoshop.menu.layer = {
 		'init': function(){
+			_cartoshop.vars.menu.layer.base = document.querySelector('.cartoshop-menu-layer');
 			_cartoshop.vars.menu.layer.list = document.querySelector('.cartoshop-layer-list');
-			/* Add layer option */
 			_cartoshop.menu.layer.option_add_layer();
+			_cartoshop.menu.layer.option_empty_layers();
+			_cartoshop.menu.layer.option_layers_visible_to_tiled();
 		},
 		'option_add_layer': function(){
-			_cartoshop.vars.menu.layer.options.addLayer = document.querySelector('.cartoshop-option-add-layer');
+			_cartoshop.vars.menu.layer.options.addLayer = _cartoshop.vars.menu.layer.base.querySelector('.cartoshop-option-add-layer');
 
 			var input = _cartoshop.vars.menu.layer.options.addLayer.querySelector('textarea[name="textarea-new-layer"]');
 			var btn   = _cartoshop.vars.menu.layer.options.addLayer.querySelector('.btn-ok');
 			btn.addEventListener('click',function(e){
 				_cartoshop.vars.map.layers.register(input.value);
 			});
+		},
+		'option_layers_visible_to_tiled': function(){
+			_cartoshop.vars.menu.layer.options.layersVisibleToTiled = _cartoshop.vars.menu.layer.base.querySelector('.cartoshop-option-layers-visible-to-tiled');
+
+			_cartoshop.vars.menu.layer.options.layersVisibleToTiled.addEventListener('click',function(e){
+				_cartoshop.vars.map.layers.visibleToTiled();
+			});
+		},
+		'option_empty_layers': function(){
+			_cartoshop.vars.menu.layer.options.emptyLayers = _cartoshop.vars.menu.layer.base.querySelector('.cartoshop-option-empty-layers');
+
+			_cartoshop.vars.menu.layer.options.emptyLayers.addEventListener('click',function(e){
+				_cartoshop.vars.map.layers.visibleToTiled();
+			});
+		},
+		'event_layer_visibility_change': function(layer,visibility){
+			/* Change visibiltiy indicator in layer list */
+			var node = _cartoshop.vars.menu.layer.list.querySelector('.cartoshop-layer-list-node-' + layer._id);
+			var indicator = node.querySelector('.layer-visibility').firstChild;
+			indicator.classList.remove('fa-eye');
+			indicator.classList.remove('fa-eye-slash');
+			indicator.classList.add(visibility == 'hidden' ? 'fa-eye-slash' : 'fa-eye');
 		},
 		'append': function(layer){
 			var view = {'layer':layer._ilayer};
@@ -316,6 +346,7 @@ _cartoshop.vars.map.layers.register({
 			if( node ){_cartoshop.vars.menu.layer.list.removeChild(node);}
 		}
 	};
+	/* END-Menus */
 
 	_cartoshop.sidebar = {};
 	_cartoshop.sidebar.layer = {

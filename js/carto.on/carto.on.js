@@ -72,8 +72,8 @@ this.dispatchEvents = true;
 		var ths = this;
 		//window.L_PREFER_CANVAS = true;
 		this._map = L.map(this.holder,{zoomControl:false}).setView(this._config.center,this._config.zoom);
+		this.layers.setMap(this._map);
 		this.layers._cartoon = this;
-		this.layers.map = this._map;
 
 		if( this.dispatchEvents ){
 			if( !('cartoon_handlerZoomChange' in this._map) ){
@@ -348,7 +348,31 @@ this.dispatchEvents = true;
 	});
 
 	if( typeof _cartoon_helper_query == 'undefined' ){
-		
+		function _cartoon_helper_query(url,params,callbacks){
+			if( !callbacks ){callbacks = {};}
+			var method = 'GET';if(params){method = 'POST';}
+			var rnd = Math.floor(Math.random()*10000);
+			var data = false;
+			if( params ){switch( true ){
+				case params === {}:break;
+				case ($is.object(params)):data = new FormData();for(k in params){data.append(k,params[k]);}break;
+				default:data = params;
+			}}
+
+			var xhr = new XMLHttpRequest();
+			if( url.indexOf('?') > 0 ){}
+			xhr.open(method,url + ( url.indexOf('?') > 0 ? '&' : '?' ) + 'rnd=' + rnd,true);
+			xhr.onreadystatechange = function(){
+				if( callbacks.onEnd && xhr.readyState == XMLHttpRequest.DONE ){
+					return callbacks.onEnd(xhr.responseText);
+				}
+			}
+			if( data ){
+				//if(!$is.formData(data)){xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');}
+				if( $is.string(data) && data.match(/^\{.*?\}$/) ){xhr.setRequestHeader('Content-Type','application/json');}
+			}
+			xhr.send(data);
+		};
 	}
 
 	if( typeof $extend == 'undefined' ){

@@ -4,9 +4,18 @@
 			this.config = {};
 			this.config.dispatchEvents = true;
 
-			if( ilayer.id ){this._id = ilayer.id;}
+			if( ilayer.id ){
+				this.id  = ilayer.id;
+				this._id = ilayer.id;
+			}
+
+			this._cartoon_display = 'block';
 		}
 		addTo(map){
+			if( !this._layer ){
+				/* If there is no instanced layer yet you cant append nothing */
+				return false;
+			}
 			this._map = map;
 			this._layer.addTo(map);
 			return this;
@@ -24,6 +33,17 @@
 					//this.controlsShow();
 				}.bind(this));
 			}
+		}
+		remove(){
+			/* Remove this layer from the parent map, its basically
+			 * an alias to the underlying layer */
+			if( this._map
+			 && this._layer
+			 && ('remove' in this._layer) ){
+				this._layer.remove();
+				return true;
+			}
+			return false;
 		}
 		hide(){
 			var a;
@@ -85,6 +105,9 @@
 		toggle(){
 			if( !this._cartoon_display || this._cartoon_display == 'block' ){return this.hide();}
 			return this.show();
+		}
+		isVisible(){
+			return (this._cartoon_display == 'block');
 		}
 		_guid(){
 			function s4(){
@@ -301,11 +324,12 @@
 
 	function _cartoon_layers(config){
 		this.layers = {};
-		this.config = {};
-		this.map = false;
-
-//FIXME: hardcoded
-		this.config.dispatchEvents = true;
+		this.config = config || {'dispatchEvents':true};
+		this._map = false;
+	};
+	_cartoon_layers.prototype.setMap = function(map){
+		//FIXME: check map
+		this._map = map;
 	};
 	_cartoon_layers.prototype.register = function(layer){
 		if( $is.string(layer) ){
@@ -326,56 +350,127 @@
 		}
 		layer.type = layer.type.toLowerCase();
 
-		if( this.map ){
+		if( this._map ){
 			/* If the map exists, we apply the layers */
 			if( layer.type == 'tiled' ){
 				_cartoon_layer = new _cartoon_layer_tiled(layer);
-				_cartoon_layer.addTo(this.map);
+				_cartoon_layer.addTo(this._map);
 			}
 			if( layer.type == 'cartodb' ){
 				_cartoon_layer = new _cartoon_layer_cartodb(layer);
-				_cartoon_layer.addTo(this.map);
+				_cartoon_layer.addTo(this._map);
 			}
 			if( layer.type == 'cubes' ){
 				_cartoon_layer = new _cartoon_layer_cubes(layer);
-				_cartoon_layer.addTo(this.map);
+				_cartoon_layer.addTo(this._map);
 			}
+
+			layer._cartoon_layer = _cartoon_layer;
 		}
 
-		if( this.map && this.config.dispatchEvents ){
+		if( this._map && this.config.dispatchEvents ){
 			/* Notify the layer registering */
-			var event = new CustomEvent('cartoon-layer-register',{'detail':{'map':this.map,'layer':_cartoon_layer},'bubbles':true,'cancelable':true});
-			this.map._container.dispatchEvent(event);
+			var event = new CustomEvent('cartoon-layer-register',{'detail':{'map':this._map,'layer':_cartoon_layer},'bubbles':true,'cancelable':true});
+			this._map._container.dispatchEvent(event);
 		}
 
 		return this.layers[layer.id] = layer;
 	};
-	_cartoon_layers.prototype.empty = function(){
-		this.layers = {};
-		//FIXME: remove from map
-		//FIXME: remove callbacks
-	}
 	_cartoon_layers.prototype.remove = function(layer){
-		if( !this.layers[layer._id] ){return false;}
-
-		delete this.layers[layer._id];
-		if( ('remove' in layer._layer) ){layer._layer.remove();}
-
-		if( this.map && this.config.dispatchEvents ){
-			/* Notify the layer unregistering */
-			var event = new CustomEvent('cartoon-layer-remove',{'detail':{'map':this.map,'layer':layer},'bubbles':true,'cancelable':true});
-			this.map._container.dispatchEvent(event);
+		if( !this.layers[layer.id] ){
+			console.log('Layer not found');
+			return false;
 		}
-	}
-	_cartoon_layers.prototype.render = function(layer){
+
+		if( this.layers[layer.id]._cartoon_layer
+		 && this.layers[layer.id]._cartoon_layer
+		 && ('remove' in this.layers[layer.id]._cartoon_layer ) ){
+			this.layers[layer.id]._cartoon_layer.remove();
+		}
+
+		if( this._map && this.config.dispatchEvents ){
+			/* Notify the layer unregistering */
+			var event = new CustomEvent('cartoon-layer-remove',{'detail':{'map':this._map,'layer':this.layers[layer.id]._cartoon_layer},'bubbles':true,'cancelable':true});
+			this._map._container.dispatchEvent(event);
+		}
+
+		delete this.layers[layer.id];
+	};
+	_cartoon_layers.prototype.forEach = function(callback){
+		this.tmp = false;
+		for( this.tmp in this.layers ){
+			callback(this.layers[this.tmp],this.tmp);
+		}
+	};
+	_cartoon_layers.prototype.empty = function(){
+		this.forEach(function(lyr){
+			this.remove(lyr);
+		}.bind(this));
+	};
+	_cartoon_layers.prototype.get = function(id){
+		if( !this.layers[id] ){return false;}
+		return this.layers[id];
+	};
+	_cartoon_layers.prototype.toTiled = function(layer){
 		if( layer._type != 'cartodb' ){
 			console.log('Cant render this type yet');
 			return false;
 		}
-	}
-	_cartoon_layers.prototype.get = function(id){
-		if( !this.layers[id] ){return false;}
-		return this.layers[id];
+		//FIXME: TODO
+	};
+	_cartoon_layers.prototype.visibleToTiled = function(id){
+		/* This will convert visible layers to tiled ones using cartodb
+		 * Note: Only compatible with cartodb layers */
+		var config = {'layers':[]};
+		var copy = false;
+		this.forEach(function(lyr){
+			if( lyr.type !== 'cartodb'
+			 || !lyr._cartoon_layer
+			 || !lyr._cartoon_layer._ilayer ){return false;}
+			if( !lyr._cartoon_layer.isVisible() ){return false;}
+
+			copy = Object.assign({},lyr._cartoon_layer._ilayer);
+			copy.type = 'mapnik'; /* Need to re-type */
+			delete copy._cartoon_layer;
+			config.layers.push(copy);
+		}.bind(this));
+
+		if( !config.layers.length ){
+			/* NO layers to render */
+			return false;
+		}
+
+		//FIXME: hardcoded user
+		this._query('http://documentation.cartodb.com/api/v1/map',JSON.stringify(config),{
+			'onEnd': function(res){
+				try {
+					res = JSON.parse(res);
+				} catch (e) {
+					console.log('Unknown response');
+					return false;
+				}
+
+				/* Calculate urlTemplate */
+				res.metadata.layers.forEach(function(lyr,i){
+					//FIXME: hardcoded user
+					var urlTemplate = 'http://ashbu.cartocdn.com/documentation/api/v1/map/' + res.layergroupid + '/' + i + '/{z}/{x}/{y}.png';
+					this.register({
+						"id":lyr.id,
+						"type":"tiled",
+						"options":{
+							"urlTemplate":urlTemplate,
+							"minZoom":"0",
+							"maxZoom":"18",
+							"attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+						}
+					});
+					console.log(urlTemplate);
+				}.bind(this));
+			}.bind(this)
+		});
+	};
+	_cartoon_layers.prototype._query = function(url,params,callbacks){
+		return _cartoon_helper_query(url,params,callbacks);
 	};
 	_cartoon_layers.prototype._guid = function(){
 		function s4(){

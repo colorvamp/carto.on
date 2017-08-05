@@ -48,7 +48,6 @@
 				</ul>
 			</div>
 		</li>
-		<li>Select</li>
 		<li class="dropdown-toggle"><span><i class="fa fa-search" aria-hidden="true"></i> View</span>
 			<div class="dropdown-menu padded">
 				<h4><i class="fa fa-search" aria-hidden="true"></i> View Menu</h4>
@@ -70,7 +69,7 @@
 				</ul>
 			</div>
 		</li>
-		<li class="dropdown-toggle"><span><i class="fa fa-th-list" aria-hidden="true"></i> Layer</span>
+		<li class="dropdown-toggle cartoshop-menu-layer"><span><i class="fa fa-th-list" aria-hidden="true"></i> Layer</span>
 			<div class="dropdown-menu padded">
 				<ul class="tabs widget-tabs">
 				<li class="tab">
@@ -87,6 +86,10 @@
 								<div>Layer ID</div>
 								<div></div>
 							</li>
+						</ul>
+						<ul class="table">
+							<li><div><a href="javascript:" class="cartoshop-option-layers-visible-to-tiled"><i class="fa fa-map" aria-hidden="true"></i> Visible to tiled</a></div></li>
+							<li><div><a href="javascript:" class="cartoshop-option-empty-layers"><i class="fa fa-trash" aria-hidden="true"></i> Remove all layers</a></div></li>
 						</ul>
 					</div>
 				</li>
@@ -121,7 +124,7 @@
 			</header>
 			<div class="box">
 				<h4>Handle separated layers</h4>
-				<p>Carto.shop can work with a pile of separated layers. You can modify the differtent properties of each layer easily.</p>
+				<p>Carto.shop can manage a stack of separated layers. You can modify the differtent properties of each layer easily.</p>
 			</div>
 			<div class="box">
 				<h4>Load complex map configs</h4>
@@ -146,7 +149,7 @@
 	<div class="cartoshop-templates">
 		<script type="text/html" id="template-cartoshop-layer-list-node">
 			<li class="cartoshop-layer-list-node cartoshop-layer-list-node-{{layer.id}}">
-				<div><i class="fa fa-eye" aria-hidden="true"></i></div>
+				<div class="layer-visibility"><i class="fa fa-eye" aria-hidden="true"></i></div>
 				<div>{{layer.type}}</div>
 				<div><a href="javascript:">{{layer.id}}</a></div>
 				<div class="btn-group mini">
@@ -156,7 +159,7 @@
 							<p>Layer options</p>
 							<ul class="table">
 								<li><div><a href="javascript:" class="cartoshop-option-layer-duplicate"><i class="fa fa-clone" aria-hidden="true"></i> Duplicate layer</a></div></li>
-								<li><div><a href="javascript:" class="cartoshop-option-layer-render"><i class="fa fa-paint-brush" aria-hidden="true"></i> Render layer</a></div></li>
+								<!--<li><div><a href="javascript:" class="cartoshop-option-layer-render"><i class="fa fa-paint-brush" aria-hidden="true"></i> Render layer</a></div></li>-->
 								<li><div><a href="javascript:" class="cartoshop-option-layer-remove" data-id="{{layer.id}}"><i class="fa fa-trash" aria-hidden="true"></i> Remove layer</a></div></li>
 							</ul>
 							<div class="btn-group mini right">
