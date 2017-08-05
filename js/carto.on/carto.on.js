@@ -40,6 +40,10 @@ this.dispatchEvents = true;
 
 		console.log('no support yet for this format');
 	};
+	_cartoon.prototype.setZoom = function(level){
+		if( !this._map ){return false;}
+		return this._map.setZoom(level);
+	};
 	_cartoon.prototype.config = function(config){
 		this._config = config;
 		if( !this._config ){this._config = {};}
@@ -384,7 +388,7 @@ this.dispatchEvents = true;
 			array:    function(o){return (Array.isArray(o) || typeof o.length === 'number');},
 			string:   function(o){return (typeof o == 'string' || o instanceof String);},
 			object:   function(o){return (o.constructor.toString().indexOf('function Object()') == 0);},
-			element:  function(o){return ('nodeType' in o && o.nodeType === 1 && 'cloneNode' in o);},
+			element:  function(o){return (!$is.string(o) && 'nodeType' in o && o.nodeType === 1 && 'cloneNode' in o);},
 			function: function(o){if(!o){return false;}return (o.constructor.toString().indexOf('function Function()') == 0);},
 			formData: function(o){return (o.constructor.toString().indexOf('function FormData()') == 0);}
 		};

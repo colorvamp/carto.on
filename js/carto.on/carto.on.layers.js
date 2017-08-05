@@ -193,8 +193,21 @@
 				api_url = api_url.replace('{user}',api_user);
 			}
 
+			if( this._map && this.config.dispatchEvents ){
+				/* This will take a while, so notify event */
+				var event = new CustomEvent('cartoon-layer-loading-start',{'detail':{'map':this._map,'layer':this},'bubbles':true,'cancelable':true});
+				this._map._container.dispatchEvent(event);
+			}
+
 			this._query(api_url + '/api/v2/sql?q=' + sql,false,{
 				'onEnd': function(data){
+					if( this._map && this.config.dispatchEvents ){
+						/* Finally we got the response, notify */
+						var event = new CustomEvent('cartoon-layer-loading-end',{'detail':{'map':this._map,'layer':this},'bubbles':true,'cancelable':true});
+						this._map._container.dispatchEvent(event);
+					}
+
+
 					//FIXME: parsear datos de campos
 					data = JSON.parse(data);
 					if( !data.rows ){
@@ -226,7 +239,7 @@
 							ths.add(geoj);
 						}
 					});
-				}
+				}.bind(this)
 			});
 		}
 		cartocss(theme){

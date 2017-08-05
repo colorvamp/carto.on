@@ -59,6 +59,17 @@
 				e.stopPropagation();
 				_cartoshop.menu.layer.event_layer_visibility_change(e.detail.layer,e.detail.visibility);
 			});
+			document.body.addEventListener('cartoon-layer-loading-start',function(e){
+				e.stopPropagation();
+				_cartoshop.notifications.append({
+					 'id':'loading-' + e.detail.layer._id
+					,'text':'<i class="fa fa-hourglass-half" aria-hidden="true"></i> Layer ' + e.detail.layer._id + ' is loading'
+				});
+			});
+			document.body.addEventListener('cartoon-layer-loading-end',function(e){
+				e.stopPropagation();
+				_cartoshop.notifications.remove('loading-' + e.detail.layer._id);
+			});
 			document.body.addEventListener('cartoon-geojson-click',function(e){
 				e.stopPropagation();
 				if( _cartoshop.vars.selected ){
@@ -347,6 +358,29 @@ _cartoshop.vars.map.layers.register({
 		}
 	};
 	/* END-Menus */
+
+	_cartoshop.notifications = {
+		'append': function(config){
+			var node = document.createElement('DIV');
+			node.classList.add('notification-node');
+			if( config.text ){node.innerHTML = config.text;}
+			if( config.id ){node.setAttribute('id','notification-' + config.id);}
+
+			var holder = document.querySelector('.cartoshop-footer-notifications');
+			holder.appendChild(node);
+		},
+		'remove': function(id){
+			var holder = document.querySelector('.cartoshop-footer-notifications');
+			if( $is.string(id) ){
+				if( (node = holder.querySelector('#notification-' + id)) ){
+					holder.removeChild(node);
+				}
+			}
+			if( $is.element(id) ){
+				//FIXME: TODO
+			}
+		}
+	};
 
 	_cartoshop.sidebar = {};
 	_cartoshop.sidebar.layer = {
