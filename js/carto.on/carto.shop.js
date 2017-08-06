@@ -12,9 +12,10 @@
 				,'map': {'KEY_SHIFT': 16,'KEY_CONTROL': 17,'KEY_ALT': 18,'KEY_SUPR': 46,'KEY_WND': 91}
 			}
 			,'menu': {
-				 'edit':  {'options':{}}
-				,'view':  {'options':{}}
-				,'layer': {'options':{},'list':false}
+				 'archive':  {'options':{}}
+				,'edit':     {'options':{}}
+				,'view':     {'options':{}}
+				,'layer':    {'options':{},'list':false}
 			}
 		},
 		'init': function(){
@@ -36,6 +37,7 @@
 			_cartoshop.load();
 
 			/* INI-Initialize menus */
+			_cartoshop.menu.archive.init();
 			_cartoshop.menu.edit.init();
 			_cartoshop.menu.view.init();
 			_cartoshop.menu.layer.init();
@@ -124,19 +126,7 @@
 
 			/* Render de map */
 			_cartoshop.vars.map.config(_cartoshop.vars.config);
-_cartoshop.vars.map.config(test_config);
 			_cartoshop.vars.map.render();
-if( 0 ){
-_cartoshop.vars.map.layers.register({
-	"type":"tiled",
-	"options":{
-		"urlTemplate":"http://ashbu.cartocdn.com/documentation/api/v1/map/f4591e1709797856197314e950fe8489:0/1/{z}/{x}/{y}.png",
-		"minZoom":"0",
-		"maxZoom":"18",
-		"attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
-	}
-});
-}
 if( 0 ){
 _cartoshop.vars.map.layers.register({
 	"type":"CartoDB",
@@ -250,6 +240,9 @@ _cartoshop.vars.map.layers.register({
 	};
 
 	_cartoshop.experiments = {
+		'init': function(){
+			
+		},
 		'cubes': function(){
 			_cartoshop.vars.map.layers.empty();
 			_cartoshop.vars.map.layers.register({
@@ -272,12 +265,40 @@ _cartoshop.vars.map.layers.register({
 			_cartoshop.vars.map.setZoom(18);
 			_cartoshop.vars.map.setCenter('40.40927061480857,-3.7368214130401616');
 			console.log(_cartoshop.vars.map.getCenter());
+		},
+		'cartodb': function(){
+			_cartoshop.vars.map.config(test_config);
+			_cartoshop.vars.map.render();
 		}
 	};
 	
 
 	/* INI-Menus */
 	_cartoshop.menu = {};
+	_cartoshop.menu.archive = {
+		'init': function(){
+			_cartoshop.vars.menu.archive.base = document.querySelector('.cartoshop-menu-archive');
+			_cartoshop.menu.archive.option_export_map();
+			_cartoshop.menu.archive.option_experiments();
+		},
+		'option_export_map': function(){
+			_cartoshop.vars.menu.archive.options.export_map = _cartoshop.vars.menu.archive.base.querySelector('.cartoshop-option-export-map');
+			var textarea = _cartoshop.vars.menu.archive.options.export_map.querySelector('textarea');
+
+			//FIXME mousedown no está bien, hacer algún onOpen
+			_cartoshop.vars.menu.archive.options.export_map.addEventListener('mousedown',function(e){
+				var json = _cartoshop.vars.map.toJson();
+				console.log(json);
+				textarea.value = json;
+			});
+		},
+		'option_experiments': function(){
+			_cartoshop.vars.menu.archive.options.experiments = _cartoshop.vars.menu.archive.base.querySelector('.cartoshop-option-experiments');
+			_cartoshop.vars.menu.archive.options.experiments.addEventListener('mousedown',function(e){
+				_cartoshop.sidebar.experiments();
+			});
+		}
+	};
 	_cartoshop.menu.edit = {
 		'init': function(){
 			/* Edit Selected option */
@@ -410,7 +431,21 @@ _cartoshop.vars.map.layers.register({
 		}
 	};
 
-	_cartoshop.sidebar = {};
+	_cartoshop.sidebar = {
+		'experiments': function(){
+			var temp = _cartoshop.utils.template('cartoshop-sidebar-experiments').render({}).append('.cartoshop-sidebar');
+			var h = temp.parent;
+
+			var cartodb_experiment = h.querySelector('.cartoshop-experiments-cartodb');
+			cartodb_experiment.addEventListener('click',function(){
+				_cartoshop.experiments.cartodb();
+			});
+			var cubes_experiment = h.querySelector('.cartoshop-experiments-cubes');
+			cubes_experiment.addEventListener('click',function(){
+				_cartoshop.experiments.cubes();
+			});
+		}
+	};
 	_cartoshop.sidebar.layer = {
 		'cartodb': function(layer){
 			var view = {'layer':layer._ilayer};

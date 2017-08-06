@@ -29,13 +29,25 @@
 		</div>
 	</div>
 	<ul class="menu">
-		<li class="dropdown-toggle"><span><i class="fa fa-archive" aria-hidden="true"></i> Archive</span>
+		<li class="dropdown-toggle cartoshop-menu-archive"><span><i class="fa fa-archive" aria-hidden="true"></i> Archive</span>
 			<div class="dropdown-menu padded">
 				<h4><i class="fa fa-archive" aria-hidden="true"></i> Archive Menu</h4>
 				<p>Archive Menu</p>
 				<ul class="table">
 					<li><div><a href="javascript:" class="cartoshop-option-import-map"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Import map</a></div></li>
-					<li><div><a href="javascript:" class="cartoshop-option-export-map"><i class="fa fa-cloud-download" aria-hidden="true"></i> Export map</a></div></li>
+					<li class="cartoshop-option-export-map"><div class="dropdown-toggle"><a href="javascript:"><i class="fa fa-cloud-download" aria-hidden="true"></i> Export map</a>
+						<div class="dropdown-menu padded">
+							<h4><i class="fa fa-cloud-download" aria-hidden="true"></i> Export map</h4>
+							<p>Export this map in JSON format</p>
+							<div class="box">
+								<textarea name="cartoshop-textarea-big" placeholder="{}"></textarea>
+							</div>
+							<div class="btn-group mini right">
+								<div class="btn btn-close"><i class="fa fa-close" aria-hidden="true"></i> Close</div>
+							</div>
+						</div>
+					</div></li>
+					<li><div><a href="javascript:" class="cartoshop-option-experiments"><i class="fa fa-flask" aria-hidden="true"></i> Experiments</a></div></li>
 				</ul>
 			</div>
 		</li>
@@ -170,6 +182,23 @@
 					</div>
 				</div>
 			</li>
+		</script>
+		<script type="text/html" id="template-cartoshop-sidebar-experiments">
+			<header class="node">
+				<div class="image s32"><i class="fa fa-flask" aria-hidden="true"></i></div>
+				<div class="wrapper">
+					<h2>Experiments in Carto.shop</h2>
+					<p>There are a few experiments ready to teach you about the app.</p>
+				</div>
+			</header>
+			<div class="box">
+				<h4><a class="cartoshop-experiments-cartodb" href="javascript:">Cartodb Config Profile</a></h4>
+				<p>Load Cartodb example profile.</p>
+			</div>
+			<div class="box">
+				<h4><a class="cartoshop-experiments-cubes" href="javascript:">Cube layers</a></h4>
+				<p>Test cube layers for mapping buildings</p>
+			</div>
 		</script>
 		<script type="text/html" id="template-cartoshop-sidebar-layer-cartodb">
 			<header class="node">

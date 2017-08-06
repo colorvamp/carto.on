@@ -52,6 +52,18 @@
 		if( !this._map ){return false;}
 		return this._map.setZoom(level);
 	};
+	_cartoon.prototype.toJson = function(){
+		var copy = Object.assign({},this._config);
+		var tmp  = false;
+		copy.layers = [];
+		/* Remapping layers for possible updates */
+		this.layers.forEach(function(lyr){
+			tmp = this.layers.toJson(lyr);
+			if( !tmp ){return false;}
+			copy.layers.push(JSON.parse(tmp));
+		}.bind(this));
+		return JSON.stringify(copy);
+	};
 	_cartoon.prototype.config = function(config){
 		this._config = config;
 		if( !this._config ){this._config = {};}
@@ -82,8 +94,14 @@
 	};
 	_cartoon.prototype.render = function(){
 		var ths = this;
+
+		if( !this._map ){
+			/* There are a previous map already rendered */
+			this._map = L.map(this.holder,{zoomControl:false});
+		}
+
 		//window.L_PREFER_CANVAS = true;
-		this._map = L.map(this.holder,{zoomControl:false}).setView(this._config.center,this._config.zoom);
+		this._map.setView(this._config.center,this._config.zoom);
 		this.layers.setMap(this._map);
 		this.layers._cartoon = this;
 
@@ -201,7 +219,7 @@
 		var style = this.style({'id':tablename,'row':layer._row || {}});
 		return layer.setStyle(style);
 	};
-	_cartoon_cartocss.prototype.parse = function(blob,props){
+	_cartoon_cartocss.prototype.parse = function(blob){
 		/* Remove comments */
 		blob = blob.replace(/\/\*.*?\*\//g,'');
 		blob += '\n';

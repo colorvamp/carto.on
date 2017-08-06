@@ -43,6 +43,7 @@
 				this._layer.remove();
 				return true;
 			}
+			//FIXME: this should fire event?
 			return false;
 		}
 		hide(){
@@ -215,6 +216,9 @@
 						console.log(data);
 						return false;
 					}
+					/* Update the ilayer query */
+					this._ilayer.options.sql = sql;
+
 					data.rows.forEach(function(row,rowKey){
 						if( row.the_geom ){
 							//FIXME: cachear en this
@@ -248,6 +252,9 @@
 			this._layer.eachLayer(function(lyr){
 				this._cartoon_cartocss.layer(lyr);
 			}.bind(this));
+
+			/* Update the ilayer cartocss, a bit blind but ok */
+			this._ilayer.options.cartocss = theme;
 		}
 	}
 	class _cartoon_layer_cubes extends _cartoon_layer{
@@ -425,6 +432,15 @@
 	_cartoon_layers.prototype.get = function(id){
 		if( !this.layers[id] ){return false;}
 		return this.layers[id];
+	};
+	_cartoon_layers.prototype.toJson = function(layer){
+		if( !this.layers[layer.id] ){
+			console.log('Layer not found');
+			return false;
+		}
+		var copy = Object.assign({},this.layers[layer.id]);
+		delete copy._cartoon_layer;
+		return JSON.stringify(copy);
 	};
 	_cartoon_layers.prototype.toTiled = function(layer){
 		if( layer._type != 'cartodb' ){

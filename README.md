@@ -46,6 +46,9 @@ Helper to re-center map, it accepts a range of args:
 
 - setCenter( (string)"lat,lng" )
 
+#### cartoon.toJSON()
+Export entire map configuration un JSON format.
+
 WIP
 
 Carto.on Layer methods
@@ -82,6 +85,9 @@ cartoon.layers.forEach(function(layer,id){
 	console.log(id);
 });
 ```
+#### cartoon.layers.toJSON(\_cartoon\_layer|object)
+Export layer in json format
+
 #### cartoon.layers.visibleToTiled()
 Take all visible layers and render it using cartodb api resulting in one or various tiled static layer.
 
@@ -114,6 +120,32 @@ Fired when a layer that depends on transferring data makes the request.
 Fired when a layer that depends on transferring receives the request.
 
 WIP
+
+\_cartoon\_cartocss
+-----------
+This is the cartocss parser class. DISCLAIMER: The standar is not fully implemented.
+
+#### \_cartoon\_cartocss.parse(string)
+This will parse a cartocss string to store properties of different objets
+
+#### \_cartoon\_cartocss.style(object)
+This will return the final style for a given properties in leaflet format.
+
+#### \_cartoon\_cartocss.style(object)
+Helper to find and update final style based on the properties of a leaflet layer.
+
+```
+var cartocss = new \_cartoon\_cartocss();
+cartocss.parse(styles);
+
+var geoj = L.geoJson({...});
+geoj._type = 'geojson';
+geoj._sql  = sql; /* If available, the query that returned the data to find css #id */
+geoj._row  = row; /* This is the table properties, area, iso, etc*/
+
+cartocss.layer(geoj);
+```
+
 
 \_cartoon\_layer
 -----------
@@ -156,16 +188,19 @@ Changes the style of this cartodb layer.
 -----------
 Class for cube layers.
 
+
+
 TO-DO
 -----
 
 Features I would like to add.
 
 - [x] Render Cartodb templates (mapnick)
-- [ ] When modify sql or cartocss in a cartodb layer update ilayer
-- [ ] toString and toJson methods in cartoon
-- [ ] Archive -> Export map
+- [x] When modify sql or cartocss in a cartodb layer update ilayer
+- [x] toJson methods in cartoon
+- [x] Archive -> Export map
 - [ ] Archive -> Import config
+- [ ] When adding or modifying object to layer, update ilayer for exporting
 - [x] Layer -> Add layer
 - [ ] View -> Option for zooming
 - [x] Delete Objects on supr keypress
@@ -179,7 +214,7 @@ Features I would like to add.
 - [ ] Custom layer for mapping roads
 - [ ] Complete cartocss parser to handle #Polygon etc
 - [ ] Undo stack
-- [ ] Projecting svg closed paths in y axis
+- [ ] Projecting svg closed paths on y axis
 - [ ] Bug when angle is 0 (==false) on cubes
 - [ ] Bookmark positions to fast-travel
 - [ ] quadtree algorightm to optimize layer/cubes drawing
