@@ -26,6 +26,18 @@ Carto.on methods
 #### cartoon.config(object)
 Loads an entire map configuration object for easy of use.
 
+#### cartoon.setHolder(string|element)
+Changes the map holder element where it will be contained.
+
+```
+/* Pass holder when instancing ... */
+var cartoon = new _cartoon('body .cartoon-holder');
+
+/* ... or set it after */
+var cartoon = new _cartoon();
+cartoon.setHolder('body .cartoon-holder');
+```
+
 #### cartoon.setZoom(integer)
 Changes the zoom level of the map.
 

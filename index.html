@@ -280,13 +280,6 @@
 	</div>
 
 		<script type="text/javascript">
-			addEventListener('load',function(){
-				return false;
-				//var _map = new _cartoon('.cartoshop-map');
-				//_map.config(test_config);
-				//_map.render();
-			});
-
 var test_config = {
   "center":"[52.5897007687178, 52.734375]",
   "zoom":4,
@@ -307,7 +300,7 @@ var test_config = {
     {
       "type":"CartoDB",
       "options":{
-        "sql":"select * as geojson from european_countries_e",
+        "sql":"select * from european_countries_e",
         "cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
         "cartocss_version":"2.1.1"
       }

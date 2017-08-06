@@ -124,6 +124,7 @@
 
 			/* Render de map */
 			_cartoshop.vars.map.config(_cartoshop.vars.config);
+_cartoshop.vars.map.config(test_config);
 			_cartoshop.vars.map.render();
 if( 0 ){
 _cartoshop.vars.map.layers.register({
@@ -150,7 +151,7 @@ _cartoshop.vars.map.layers.register({
 	}
 });
 }
-if( 1 ){
+if( 0 ){
 _cartoshop.vars.map.layers.register({
 	 "type":"cubes"
 	,"options":{

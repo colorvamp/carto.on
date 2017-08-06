@@ -354,11 +354,14 @@
 			}
 		}
 
-		var ths = this;
 		if( !layer.id ){layer.id = this._guid();}
 		if( !layer.type ){
 			console.log('Invalid layer');
 			return false;
+		}
+		if( this.layers[layer.id] ){
+			/* Layer id already registered, avoid duplicates */
+			layer.id = this._guid();
 		}
 		layer.type = layer.type.toLowerCase();
 
@@ -430,10 +433,11 @@
 		}
 		//FIXME: TODO
 	};
-	_cartoon_layers.prototype.visibleToTiled = function(id){
+	_cartoon_layers.prototype.visibleToTiled = function(){
 		/* This will convert visible layers to tiled ones using cartodb
 		 * Note: Only compatible with cartodb layers */
 		var config = {'layers':[]};
+		var user = false;
 		var copy = false;
 		this.forEach(function(lyr){
 			if( lyr.type !== 'cartodb'
@@ -445,15 +449,25 @@
 			copy.type = 'mapnik'; /* Need to re-type */
 			delete copy._cartoon_layer;
 			config.layers.push(copy);
+
+			if( !user && $is.set(copy,'options.user_name') ){
+				/* Grab the first user we will use to render, I'm not sure 
+				 * if it will be valid for all layers */
+				user = copy.options.user_name;
+			}
 		}.bind(this));
 
 		if( !config.layers.length ){
 			/* NO layers to render */
+			console.log('NO layers to render');
+			return false;
+		}
+		if( !user ){
+			console.log('User needed to render not found');
 			return false;
 		}
 
-		//FIXME: hardcoded user
-		this._query('http://documentation.cartodb.com/api/v1/map',JSON.stringify(config),{
+		this._query('http://' + user + '.cartodb.com/api/v1/map',JSON.stringify(config),{
 			'onEnd': function(res){
 				try {
 					res = JSON.parse(res);
@@ -464,8 +478,8 @@
 
 				/* Calculate urlTemplate */
 				res.metadata.layers.forEach(function(lyr,i){
-					//FIXME: hardcoded user
-					var urlTemplate = 'http://ashbu.cartocdn.com/documentation/api/v1/map/' + res.layergroupid + '/' + i + '/{z}/{x}/{y}.png';
+					var urlTemplate = 'http://ashbu.cartocdn.com/' + user + '/api/v1/map/' + res.layergroupid + '/' + i + '/{z}/{x}/{y}.png';
+					//FIXME: probably grab more options from remote layer
 					this.register({
 						"id":lyr.id,
 						"type":"tiled",
@@ -476,7 +490,6 @@
 							"attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
 						}
 					});
-					console.log(urlTemplate);
 				}.bind(this));
 			}.bind(this)
 		});

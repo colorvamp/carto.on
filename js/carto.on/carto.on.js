@@ -1,16 +1,12 @@
 	/* Cartoon Core Class
 	 * Class for generating maps based in a config object
 	 */
-	function _cartoon(m){
-		if( $is.string(m) ){
-			m = document.querySelector(m);
-		}
-		this.holder = m;
+	function _cartoon(m,config){
+		if( m ){this.setHolder(m);}
 		this.layers = new _cartoon_layers();
 		this._map   = false;
 		this.config();
-//FIXME: configurable?
-this.dispatchEvents = true;
+		this.dispatchEvents = $is.set(config,'dispatchEvents') ? config.dispatchEvents : true;
 	};
 	_cartoon.prototype._require = function(url, callback){
 		if( (typeof process !== 'undefined') && (process.release.name === 'node') ){
@@ -26,6 +22,14 @@ this.dispatchEvents = true;
 			script.onload = callback;
 
 			head.appendChild(script);
+		}
+	};
+	_cartoon.prototype.setHolder = function(m){
+		if( $is.string(m) ){
+			m = document.querySelector(m);
+		}
+		if( m ){
+			this.holder = m;
 		}
 	};
 	_cartoon.prototype.setCenter = function(...args){
@@ -53,7 +57,7 @@ this.dispatchEvents = true;
 		if( !this._config ){this._config = {};}
 		var tmp = null;
 
-		if( !this._config.center ){this._config.center = [40.40927061480857,-3.7368214130401616];}
+		if( !this._config.center ){this._config.center = [40.40927061480857,-3.7368214130401616]; /* My neighborhood :) */}
 		if( !this._config.zoom ){this._config.zoom = 12;}
 		if( !this._config.maps_api_config ){this._config.maps_api_config = {};}
 		if( !this._config.layers ){
@@ -103,11 +107,22 @@ this.dispatchEvents = true;
 		this._config.layers.forEach(function(layer,layerKey){
 			if( !layer.type ){return false;}
 			if( !layer.options ){layer.options = {};}
-			var l = ths.layers.register(layer);
-		});
-
-		//L.marker([42.465852227987,-2.451798543334]).addTo(this._map);
-		//L.marker([42.460346499269,-2.4478838592768]).bindPopup("<h4>Hotel Ciudad de Logroño</h4>").addTo(this._map);
+			if( layer.type.toLowerCase() == 'cartodb'
+			 && $is.set(layer,'options.sql') ){
+				/* Inject config data in the layer options if needed */
+				if( !$is.set(layer,'options.user_name')
+			 	 && $is.set(this,'_config.maps_api_config.user_name') ){
+					/* Probably we need the user to query data */
+					layer.options.user_name = this._config.maps_api_config.user_name;
+				}
+				if( !$is.set(layer,'options.maps_api_template')
+			 	 && $is.set(this,'_config.maps_api_config.maps_api_template') ){
+					/* Probably we need the url to query data */
+					layer.options.maps_api_template = this._config.maps_api_config.maps_api_template;
+				}
+			}
+			var l = this.layers.register(layer);
+		}.bind(this));
 	};
 
 	/* Cartoon Cartocss parser
@@ -172,6 +187,7 @@ this.dispatchEvents = true;
 		return $extend(this._styles,final_styles);
 	};
 	_cartoon_cartocss.prototype.layer = function(layer){
+		/* Apply matching styles to this single layer */
 		if( !('setStyle' in layer) ){
 			console.log('invalid layer');
 			return false;
@@ -388,6 +404,19 @@ this.dispatchEvents = true;
 	}
 	if( typeof $is == 'undefined' ){
 		var $is = {
+			set:      function(o,path){
+				var stone;
+				path = path || '';
+				if( path.indexOf('[') !== -1 ){throw new Error('Unsupported object path notation.');}
+				path = path.split('.');
+				do{
+					if( o === undefined ){return false;}
+					stone = path.shift();
+					if( !o.hasOwnProperty(stone) ){return false;}
+					o = o[stone];
+				}while( path.length );
+				return true;
+			},
 			empty:    function(o){if(!o || ($is.string(o) && o == '') || ($is.array(o) && !o.length)){return true;}return false;},
 			array:    function(o){return (Array.isArray(o) || typeof o.length === 'number');},
 			string:   function(o){return (typeof o == 'string' || o instanceof String);},
