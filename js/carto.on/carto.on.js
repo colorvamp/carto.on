@@ -40,6 +40,10 @@ this.dispatchEvents = true;
 
 		console.log('no support yet for this format');
 	};
+	_cartoon.prototype.getCenter = function(){
+		if( !this._map ){return false;}
+		return this._map.getCenter();
+	}
 	_cartoon.prototype.setZoom = function(level){
 		if( !this._map ){return false;}
 		return this._map.setZoom(level);

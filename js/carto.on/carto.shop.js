@@ -136,7 +136,7 @@ _cartoshop.vars.map.layers.register({
 	}
 });
 }
-if( 1 ){
+if( 0 ){
 _cartoshop.vars.map.layers.register({
 	"type":"CartoDB",
 	"options":{
@@ -150,7 +150,7 @@ _cartoshop.vars.map.layers.register({
 	}
 });
 }
-if( 0 ){
+if( 1 ){
 _cartoshop.vars.map.layers.register({
 	 "type":"cubes"
 	,"options":{
@@ -248,6 +248,33 @@ _cartoshop.vars.map.layers.register({
 		}
 	};
 
+	_cartoshop.experiments = {
+		'cubes': function(){
+			_cartoshop.vars.map.layers.empty();
+			_cartoshop.vars.map.layers.register({
+				"type":"tiled",
+				"options":{
+					"urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+					"minZoom":"0",
+					"maxZoom":"18",
+					"attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+				}
+			});
+			_cartoshop.vars.map.layers.register({
+				 "type":"cubes"
+				,"options":{
+					"cubes":[
+						 {"center":[40.40927061480857,-3.7368214130401616],'angle':66}
+					]
+				}
+			});
+			_cartoshop.vars.map.setZoom(18);
+			_cartoshop.vars.map.setCenter('40.40927061480857,-3.7368214130401616');
+			console.log(_cartoshop.vars.map.getCenter());
+		}
+	};
+	
+
 	/* INI-Menus */
 	_cartoshop.menu = {};
 	_cartoshop.menu.edit = {
@@ -307,7 +334,7 @@ _cartoshop.vars.map.layers.register({
 			_cartoshop.vars.menu.layer.options.emptyLayers = _cartoshop.vars.menu.layer.base.querySelector('.cartoshop-option-empty-layers');
 
 			_cartoshop.vars.menu.layer.options.emptyLayers.addEventListener('click',function(e){
-				_cartoshop.vars.map.layers.visibleToTiled();
+				_cartoshop.vars.map.layers.empty();
 			});
 		},
 		'event_layer_visibility_change': function(layer,visibility){

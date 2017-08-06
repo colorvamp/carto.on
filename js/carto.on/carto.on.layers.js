@@ -261,8 +261,7 @@
 			if( ilayer.options.cubes ){
 				ilayer.options.cubes.forEach(function(c,ck){
 					//FIXME: solo si no viene id
-
-//FIXME: necesito un helper para cubes
+					//FIXME: necesito un helper para cubes
 					var id     = this._guid();
 					var cube   = new _cube();
 					var icon   = L.divIcon({html:cube._container,'iconSize':[0,0]});

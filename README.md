@@ -26,6 +26,9 @@ Carto.on methods
 #### cartoon.config(object)
 Loads an entire map configuration object for easy of use.
 
+#### cartoon.setZoom(integer)
+Changes the zoom level of the map.
+
 #### cartoon.setCenter(...args)
 Helper to re-center map, it accepts a range of args:
 
@@ -147,6 +150,7 @@ TO-DO
 Features I would like to add.
 
 - [x] Render Cartodb templates (mapnick)
+- [ ] When modify sql or cartocss in a cartodb layer update ilayer
 - [ ] toString and toJson methods in cartoon
 - [ ] Archive -> Export map
 - [ ] Archive -> Import config
@@ -157,16 +161,15 @@ Features I would like to add.
 - [x] Layer remove option in layer list
 - [ ] Layer panTo option in layer list (and fitBounds())
 - [x] Loading info when ajax layers are transferring
-- [ ] Cube z-index control algorithm
+- [x] Cube z-index control algorithm
 - [ ] Cube configurable max metrics
 - [ ] Integrate CodeMirror (for editing cartocss)
 - [ ] Custom layer for mapping roads
 - [ ] Complete cartocss parser to handle #Polygon etc
 - [ ] Undo stack
 - [ ] Projecting svg closed paths in y axis
-- [ ] Bug when angle is 0 on cubes
+- [ ] Bug when angle is 0 (==false) on cubes
 - [ ] Bookmark positions to fast-travel
 - [ ] quadtree algorightm to optimize layer/cubes drawing
-- [ ] When modify sql or cartocss in a cartodb layer update ilayer
 - [x] When a layer is set to invisible, update layer list icons
 - [ ] Dijkstra + Contraction hierarchies to find best route in roads

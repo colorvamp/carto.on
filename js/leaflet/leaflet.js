@@ -1027,6 +1027,8 @@ L.DomUtil = {
 
 		el.style[L.DomUtil.TRANSFORM] =
 			'translate3d(' + pos.x + 'px,' + pos.y + 'px' + ',0)' + (scale ? ' scale(' + scale + ')' : '');
+		/* Update z-index */
+		el.style.zIndex = pos.y;
 	},
 
 	setPosition: function (el, point, no3d) { // (HTMLElement, Point[, Boolean])
@@ -1040,6 +1042,8 @@ L.DomUtil = {
 		} else {
 			el.style.left = point.x + 'px';
 			el.style.top = point.y + 'px';
+			/* Update z-index */
+			el.style.zIndex = point.y;
 		}
 	},
 
