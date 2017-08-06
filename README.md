@@ -2,7 +2,7 @@
 Carto.shop
 ==========
 
-**Carto.shop** is an ide designed to visualize, generate and modify maps. It was created as a test
+**Carto.shop** is an web app designed to visualize, generate and modify maps. It was created as a test
 case for **Carto.on** leaflet based library.
 
 
@@ -131,11 +131,11 @@ This will parse a cartocss string to store properties of different objets
 #### \_cartoon\_cartocss.style(object)
 This will return the final style for a given properties in leaflet format.
 
-#### \_cartoon\_cartocss.style(object)
+#### \_cartoon\_cartocss.layer(object)
 Helper to find and update final style based on the properties of a leaflet layer.
 
 ```
-var cartocss = new \_cartoon\_cartocss();
+var cartocss = new _cartoon_cartocss();
 cartocss.parse(styles);
 
 var geoj = L.geoJson({...});
@@ -199,8 +199,8 @@ Features I would like to add.
 - [x] When modify sql or cartocss in a cartodb layer update ilayer
 - [x] toJson methods in cartoon
 - [x] Archive -> Export map
-- [ ] Archive -> Import config
-- [ ] When adding or modifying object to layer, update ilayer for exporting
+- [x] Archive -> Import config
+- [ ] When adding or modifying objects to a layer, update ilayer for exporting
 - [x] Layer -> Add layer
 - [ ] View -> Option for zooming
 - [x] Delete Objects on supr keypress
@@ -214,6 +214,7 @@ Features I would like to add.
 - [ ] Custom layer for mapping roads
 - [ ] Complete cartocss parser to handle #Polygon etc
 - [ ] Undo stack
+- [ ] Convert to a desktop app using Electron
 - [ ] Projecting svg closed paths on y axis
 - [ ] Bug when angle is 0 (==false) on cubes
 - [ ] Bookmark positions to fast-travel

@@ -4,7 +4,7 @@
 	<title>Carto.on! | CartoDB.js</title>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-	<link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+	<link rel="shortcut icon" href="images/fav.png"/>
 	<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
 	<link rel="stylesheet" href="css/cube.css" />
 	<link rel="stylesheet" href="css/carto.shop.css" />
@@ -31,23 +31,47 @@
 	<ul class="menu">
 		<li class="dropdown-toggle cartoshop-menu-archive"><span><i class="fa fa-archive" aria-hidden="true"></i> Archive</span>
 			<div class="dropdown-menu padded">
-				<h4><i class="fa fa-archive" aria-hidden="true"></i> Archive Menu</h4>
-				<p>Archive Menu</p>
-				<ul class="table">
-					<li><div><a href="javascript:" class="cartoshop-option-import-map"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Import map</a></div></li>
-					<li class="cartoshop-option-export-map"><div class="dropdown-toggle"><a href="javascript:"><i class="fa fa-cloud-download" aria-hidden="true"></i> Export map</a>
-						<div class="dropdown-menu padded">
-							<h4><i class="fa fa-cloud-download" aria-hidden="true"></i> Export map</h4>
-							<p>Export this map in JSON format</p>
+				<ul class="tabs widget-tabs">
+					<li class="tab">
+						<div class="label">
+							<span class="ellipsis"><i class="fa fa-archive" aria-hidden="true"></i> Menu</span>
+						</div>
+						<div class="content">
+							<h4><i class="fa fa-archive" aria-hidden="true"></i> Menu</h4>
+							<p>Archive Menu</p>
+							<ul class="table">
+								<li class="cartoshop-option-export-map"><div class="dropdown-toggle"><a href="javascript:"><i class="fa fa-cloud-download" aria-hidden="true"></i> Export map</a>
+									<div class="dropdown-menu padded">
+										<h4><i class="fa fa-cloud-download" aria-hidden="true"></i> Export map</h4>
+										<p>Export this map in JSON format</p>
+										<div class="box">
+											<textarea name="cartoshop-textarea-big" placeholder="{}"></textarea>
+										</div>
+										<div class="btn-group mini right">
+											<div class="btn btn-close"><i class="fa fa-close" aria-hidden="true"></i> Close</div>
+										</div>
+									</div>
+								</div></li>
+								<li><div><a href="javascript:" class="cartoshop-option-experiments"><i class="fa fa-flask" aria-hidden="true"></i> Experiments</a></div></li>
+							</ul>
+						</div>
+					</li>
+					<li class="tab">
+						<div class="label">
+							<span class="ellipsis"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Import map</a></span>
+						</div>
+						<div class="content cartoshop-option-import-map">
+							<h4><i class="fa fa-cloud-upload" aria-hidden="true"></i> Import map</a></h4>
+							<p>Write down the map configuration</p>
 							<div class="box">
-								<textarea name="cartoshop-textarea-big" placeholder="{}"></textarea>
+								<textarea name="textarea-import-map" class="cartoshop-textarea-big" placeholder="{type:'tiled' ...}"></textarea>
 							</div>
 							<div class="btn-group mini right">
 								<div class="btn btn-close"><i class="fa fa-close" aria-hidden="true"></i> Close</div>
+								<div class="btn btn-ok"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Import</div>
 							</div>
 						</div>
-					</div></li>
-					<li><div><a href="javascript:" class="cartoshop-option-experiments"><i class="fa fa-flask" aria-hidden="true"></i> Experiments</a></div></li>
+					</li>
 				</ul>
 			</div>
 		</li>
@@ -84,43 +108,44 @@
 		<li class="dropdown-toggle cartoshop-menu-layer"><span><i class="fa fa-th-list" aria-hidden="true"></i> Layer</span>
 			<div class="dropdown-menu padded">
 				<ul class="tabs widget-tabs">
-				<li class="tab">
-					<div class="label">
-						<span class="ellipsis"><i class="fa fa-th-list" aria-hidden="true"></i> Layer List</span>
-					</div>
-					<div class="content">
-						<h4><i class="fa fa-th-list" aria-hidden="true"></i> Layer List</h4>
-						<p>Layers loaded in this map</p>
-						<ul class="table strip cartoshop-layer-list">
-							<li class="header">
-								<div class="collapse"></div>
-								<div>Layer Type</div>
-								<div>Layer ID</div>
-								<div></div>
-							</li>
-						</ul>
-						<ul class="table">
-							<li><div><a href="javascript:" class="cartoshop-option-layers-visible-to-tiled"><i class="fa fa-map" aria-hidden="true"></i> Visible to tiled</a></div></li>
-							<li><div><a href="javascript:" class="cartoshop-option-empty-layers"><i class="fa fa-trash" aria-hidden="true"></i> Remove all layers</a></div></li>
-						</ul>
-					</div>
-				</li>
-				<li class="tab">
-					<div class="label">
-						<span class="ellipsis"><i class="fa fa-plus" aria-hidden="true"></i> Add Layer</span>
-					</div>
-					<div class="content cartoshop-option-add-layer">
-						<h4><i class="fa fa-plus" aria-hidden="true"></i> Add Layer</h4>
-						<p>Write down the layer configuration</p>
-						<div class="box">
-							<textarea name="textarea-new-layer" class="cartoshop-textarea-big" placeholder="{type:'tiled' ...}"></textarea>
+					<li class="tab">
+						<div class="label">
+							<span class="ellipsis"><i class="fa fa-th-list" aria-hidden="true"></i> Layer List</span>
 						</div>
-						<div class="btn-group mini right">
-							<div class="btn btn-close"><i class="fa fa-close" aria-hidden="true"></i> Close</div>
-							<div class="btn btn-ok"><i class="fa fa-plus" aria-hidden="true"></i> Add</div>
+						<div class="content">
+							<h4><i class="fa fa-th-list" aria-hidden="true"></i> Layer List</h4>
+							<p>Layers loaded in this map</p>
+							<ul class="table strip cartoshop-layer-list">
+								<li class="header">
+									<div class="collapse"></div>
+									<div>Layer Type</div>
+									<div>Layer ID</div>
+									<div></div>
+								</li>
+							</ul>
+							<ul class="table">
+								<li><div><a href="javascript:" class="cartoshop-option-layers-visible-to-tiled"><i class="fa fa-map" aria-hidden="true"></i> Visible to tiled</a></div></li>
+								<li><div><a href="javascript:" class="cartoshop-option-empty-layers"><i class="fa fa-trash" aria-hidden="true"></i> Remove all layers</a></div></li>
+							</ul>
 						</div>
-					</div>
-				</li>
+					</li>
+					<li class="tab">
+						<div class="label">
+							<span class="ellipsis"><i class="fa fa-plus" aria-hidden="true"></i> Add Layer</span>
+						</div>
+						<div class="content cartoshop-option-add-layer">
+							<h4><i class="fa fa-plus" aria-hidden="true"></i> Add Layer</h4>
+							<p>Write down the layer configuration</p>
+							<div class="box">
+								<textarea name="textarea-new-layer" class="cartoshop-textarea-big" placeholder="{type:'tiled' ...}"></textarea>
+							</div>
+							<div class="btn-group mini right">
+								<div class="btn btn-close"><i class="fa fa-close" aria-hidden="true"></i> Close</div>
+								<div class="btn btn-ok"><i class="fa fa-plus" aria-hidden="true"></i> Add</div>
+							</div>
+						</div>
+					</li>
+				</ul>
 			</div>
 		</li>
 	</ul>
@@ -308,43 +333,43 @@
 		</script>
 	</div>
 
-		<script type="text/javascript">
-var test_config = {
-  "center":"[52.5897007687178, 52.734375]",
-  "zoom":4,
-  "maps_api_config": {
-    "user_name": "documentation",
-    "maps_api_template": "http://{user}.carto.com:80"
-  },
-  "layers":[
-    {
-      "type":"tiled",
-      "options":{
-        "urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-        "minZoom":"0",
-        "maxZoom":"12",
-        "attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
-      }
-    },
-    {
-      "type":"CartoDB",
-      "options":{
-        "sql":"select * from european_countries_e",
-        "cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
-        "cartocss_version":"2.1.1"
-      }
-    },
-    {
-      "options": {
-        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
-        "minZoom": "0",
-        "maxZoom": "18",
-        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
-      },
-      "type": "tiled"
-    }
-  ],
-};
-		</script>
-	</body>
+	<script type="text/javascript">
+	var test_config = {
+	  "center":"[52.5897007687178, 52.734375]",
+	  "zoom":4,
+	  "maps_api_config": {
+	    "user_name": "documentation",
+	    "maps_api_template": "http://{user}.carto.com:80"
+	  },
+	  "layers":[
+	    {
+	      "type":"tiled",
+	      "options":{
+		"urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+		"minZoom":"0",
+		"maxZoom":"12",
+		"attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+	      }
+	    },
+	    {
+	      "type":"CartoDB",
+	      "options":{
+		"sql":"select * from european_countries_e",
+		"cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
+		"cartocss_version":"2.1.1"
+	      }
+	    },
+	    {
+	      "options": {
+		"urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+		"minZoom": "0",
+		"maxZoom": "18",
+		"attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+	      },
+	      "type": "tiled"
+	    }
+	  ]
+	};
+	</script>
+</body>
 </html>

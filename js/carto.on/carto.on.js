@@ -65,6 +65,16 @@
 		return JSON.stringify(copy);
 	};
 	_cartoon.prototype.config = function(config){
+		if( config && $is.string(config) ){
+			/* Validate string config */
+			try {
+				config = JSON.parse(config);
+			} catch (e) {
+				console.log('Invalid Config');
+				config = false;
+			}
+		}
+
 		this._config = config;
 		if( !this._config ){this._config = {};}
 		var tmp = null;

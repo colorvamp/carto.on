@@ -280,6 +280,7 @@ _cartoshop.vars.map.layers.register({
 			_cartoshop.vars.menu.archive.base = document.querySelector('.cartoshop-menu-archive');
 			_cartoshop.menu.archive.option_export_map();
 			_cartoshop.menu.archive.option_experiments();
+			_cartoshop.menu.archive.option_import_map();
 		},
 		'option_export_map': function(){
 			_cartoshop.vars.menu.archive.options.export_map = _cartoshop.vars.menu.archive.base.querySelector('.cartoshop-option-export-map');
@@ -296,6 +297,15 @@ _cartoshop.vars.map.layers.register({
 			_cartoshop.vars.menu.archive.options.experiments = _cartoshop.vars.menu.archive.base.querySelector('.cartoshop-option-experiments');
 			_cartoshop.vars.menu.archive.options.experiments.addEventListener('mousedown',function(e){
 				_cartoshop.sidebar.experiments();
+			});
+		},
+		'option_import_map': function(){
+			_cartoshop.vars.menu.archive.options.import_map = _cartoshop.vars.menu.archive.base.querySelector('.cartoshop-option-import-map');
+			var textarea = _cartoshop.vars.menu.archive.options.import_map.querySelector('textarea');
+			var btn      = _cartoshop.vars.menu.archive.options.import_map.querySelector('.btn-ok');
+			btn.addEventListener('click',function(e){
+				_cartoshop.vars.map.config(textarea.value);
+				_cartoshop.vars.map.render();
 			});
 		}
 	};
