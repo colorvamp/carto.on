@@ -127,30 +127,6 @@
 			/* Render de map */
 			_cartoshop.vars.map.config(_cartoshop.vars.config);
 			_cartoshop.vars.map.render();
-if( 0 ){
-_cartoshop.vars.map.layers.register({
-	"type":"CartoDB",
-	"options":{
-		"user_name": "documentation",
-		"maps_api_template": "http://{user}.carto.com:80",
-		//"sql":"select * from european_countries_e where cartodb_id = 34 OR cartodb_id = 40",
-		//"sql":"select * from european_countries_e where cartodb_id = 24",
-		"sql":"select * from european_countries_e",
-		"cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
-		"cartocss_version":"2.1.1"
-	}
-});
-}
-if( 0 ){
-_cartoshop.vars.map.layers.register({
-	 "type":"cubes"
-	,"options":{
-		"cubes":[
-			 {"center":[40.40927061480857,-3.7368214130401616],'angle':66}
-		]
-	}
-});
-}
 
 			/* Remove the splash screen */
 			if( (tmp = document.querySelector('.cartoshop-splash')) ){

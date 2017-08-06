@@ -132,6 +132,7 @@
 			}
 		}
 
+		this.layers.empty();
 		this._config.layers.forEach(function(layer,layerKey){
 			if( !layer.type ){return false;}
 			if( !layer.options ){layer.options = {};}
